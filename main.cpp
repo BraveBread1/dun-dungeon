@@ -1,5 +1,6 @@
 #include"CommonFunc.h"
 #include"LTexture.h"
+#include"Player.h"
 
 bool init()
 {
@@ -60,7 +61,17 @@ int main(int argc, char* argv[])
 	}
 
 	LTexture background;
-	background.loadFromFile("assests/img/background.png", mRenderer);
+	background.loadFromFile("assests/img/bg.png", mRenderer);
+
+	Player mPlayer;
+	if (mPlayer.loadFromFile("assests/sprite/avatars.png", mRenderer) == false)
+	{
+		std::cout << "Failed to load sprite sheet texture!\n";
+	}
+	else
+	{
+		mPlayer.setClip(0, 0, mPlayer.getWidth() / 5, mPlayer.getHeight());
+	}
 
 	SDL_Event e;
 	bool quit = false;
@@ -74,12 +85,17 @@ int main(int argc, char* argv[])
 			{
 				quit = true;
 			}
+
+			mPlayer.handleEvent(e);
 		}
+
+		mPlayer.move();
 
 		SDL_SetRenderDrawColor(mRenderer, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR);
 		SDL_RenderClear(mRenderer);
 
 		background.render(0, 0, mRenderer);
+		mPlayer.render(mRenderer);
 
 		SDL_RenderPresent(mRenderer);
 	}
