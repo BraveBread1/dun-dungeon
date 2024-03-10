@@ -73,9 +73,10 @@ int main(int argc, char* argv[])
 		mPlayer.setClip(0, 0, mPlayer.getWidth() / 5, mPlayer.getHeight());
 	}
 
+	SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+
 	SDL_Event e;
 	bool quit = false;
-
 
 	while (quit == false)
 	{
@@ -91,11 +92,31 @@ int main(int argc, char* argv[])
 
 		mPlayer.move();
 
+		camera.x = (mPlayer.getPosX() + (mPlayer.getWidth() / 5) / 2) - SCREEN_WIDTH / 2;
+		camera.y = (mPlayer.getPosY() + mPlayer.getHeight() / 2) - SCREEN_HEIGHT / 2;
+
+		if (camera.x < 0)
+		{
+			camera.x = 0;
+		}
+		if (camera.y < 0)
+		{
+			camera.y = 0;
+		}
+		if (camera.x > LEVEL_WIDTH - camera.w)
+		{
+			camera.x = LEVEL_WIDTH - camera.w;
+		}
+		if (camera.y > LEVEL_HEIGHT - camera.h)
+		{
+			camera.y = LEVEL_HEIGHT - camera.h;
+		}
+
 		SDL_SetRenderDrawColor(mRenderer, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR);
 		SDL_RenderClear(mRenderer);
 
-		background.render(0, 0, mRenderer);
-		mPlayer.render(mRenderer);
+		background.render(0, 0, mRenderer, &camera);
+		mPlayer.render(mRenderer, camera.x, camera.y);
 
 		SDL_RenderPresent(mRenderer);
 	}

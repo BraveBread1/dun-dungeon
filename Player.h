@@ -14,9 +14,13 @@ public:
 	void move();
 	void FreePlayer();
 	void handleEvent(SDL_Event& e);
-	void render(SDL_Renderer* screen);
+	void render(SDL_Renderer* screen, int camX, int camY);
+
 	void setClip(int x, int y, int w, int h);
 	SDL_Rect getClip();
+
+	int getPosX();
+	int getPosY();
 
 private:
 	int mPosX;

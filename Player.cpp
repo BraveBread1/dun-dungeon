@@ -53,22 +53,22 @@ void Player::move()
 {
 	mPosX += mVelX;
 
-	if ((mPosX < 0) || (mPosX + getClip().w > SCREEN_WIDTH))
+	if ((mPosX < 0) || (mPosX + getClip().w > LEVEL_WIDTH))
 	{
 		mPosX -= mVelX;
 	}
 
 	mPosY += mVelY;
 
-	if ((mPosY < 0) || (mPosY + getClip().h > SCREEN_HEIGHT))
+	if ((mPosY < 0) || (mPosY + getClip().h > LEVEL_HEIGHT))
 	{
 		mPosY -= mVelY;
 	}
 }
 
-void Player::render(SDL_Renderer* screen)
+void Player::render(SDL_Renderer* screen, int camX, int camY)
 {
-	LTexture::render(mPosX, mPosY, screen, &clip);
+	LTexture::render(mPosX - camX, mPosY - camY, screen, &clip);
 }
 
 void Player::setClip(int x, int y, int w, int h)
@@ -82,4 +82,14 @@ void Player::setClip(int x, int y, int w, int h)
 SDL_Rect Player::getClip()
 {
 	return clip;
+}
+
+int Player::getPosX()
+{
+	return mPosX;
+}
+
+int Player::getPosY()
+{
+	return mPosY;
 }
