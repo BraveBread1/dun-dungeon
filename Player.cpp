@@ -1,5 +1,26 @@
 #include"Player.h"
 
+bool touchesWall(SDL_Rect box, Tile* tiles[])
+{
+	//Go through the tiles
+	for (int i = 0; i < TOTAL_TILES; ++i)
+	{
+		//If the tile is a wall type tile
+		if ((tiles[i]->getType() >= TILE_CENTER) && (tiles[i]->getType() <= TILE_TOPLEFT))
+		{
+			//If the collision box touches the wall tile
+			if (checkCollision(box, tiles[i]->getBox()))
+			{
+				return true;
+			}
+		}
+	}
+
+	//If no wall tiles were touched
+	return false;
+}
+
+
 Player::Player()
 {
 	mPosX = 0;
@@ -49,18 +70,18 @@ void Player::handleEvent(SDL_Event& e)
 	}
 }
 
-void Player::move()
+void Player::move(Tile* tiles[])
 {
 	mPosX += mVelX;
 
-	if ((mPosX < 0) || (mPosX + getClip().w > LEVEL_WIDTH))
+	if ((mPosX < 0) || (mPosX + getClip().w > LEVEL_WIDTH) || touchesWall(clip, tiles))
 	{
 		mPosX -= mVelX;
 	}
 
 	mPosY += mVelY;
 
-	if ((mPosY < 0) || (mPosY + getClip().h > LEVEL_HEIGHT))
+	if ((mPosY < 0) || (mPosY + getClip().h > LEVEL_HEIGHT) || touchesWall(clip, tiles))
 	{
 		mPosY -= mVelY;
 	}
@@ -92,4 +113,27 @@ int Player::getPosX()
 int Player::getPosY()
 {
 	return mPosY;
+}
+
+void Player::setCamera(SDL_Rect& camera)
+{
+	camera.x = (mPosX + (getWidth() / 5) / 2) - SCREEN_WIDTH / 2;
+	camera.y = (mPosY + getHeight() / 2) - SCREEN_HEIGHT / 2;
+
+	if (camera.x < 0)
+	{
+		camera.x = 0;
+	}
+	if (camera.y < 0)
+	{
+		camera.y = 0;
+	}
+	if (camera.x > LEVEL_WIDTH - camera.w)
+	{
+		camera.x = LEVEL_WIDTH - camera.w;
+	}
+	if (camera.y > LEVEL_HEIGHT - camera.h)
+	{
+		camera.y = LEVEL_HEIGHT - camera.h;
+	}
 }

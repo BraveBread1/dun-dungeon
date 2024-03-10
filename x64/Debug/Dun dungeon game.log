@@ -1,2 +1,5 @@
-﻿  main.cpp
+﻿  Player.cpp
+  Tile.cpp
+  main.cpp
+  Generating Code...
   Dun dungeon game.vcxproj -> C:\Users\admin\projects\Dun dungeon game vs\x64\Debug\Dun dungeon game.exe

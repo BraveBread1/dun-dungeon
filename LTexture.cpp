@@ -40,7 +40,8 @@ bool LTexture::loadFromFile(std::string path, SDL_Renderer* screen)
 	SDL_FreeSurface(loadedSurface);
 
 	mTexture = newTexture;
-	return mTexture != NULL;
+
+	return (mTexture != NULL);
 }
 
 void LTexture::free()
