@@ -9,28 +9,25 @@
 class Player : public LTexture
 {
 public:
-	Player();
+	Player(int i, int j);
 	~Player();
 
-	void move(Tile* tiles[]);
 	void FreePlayer();
-	void handleEvent(SDL_Event& e);
+	void handleEvent(SDL_Event& e, Tile*** tiles);
 	void render(SDL_Renderer* screen, int camX, int camY);
 	void setCamera(SDL_Rect& camera);
 
 	void setClip(int x, int y, int w, int h);
 	SDL_Rect getClip();
 
-	int getPosX();
-	int getPosY();
+	int getPosI();
+	int getPosJ();
 
 private:
-	int mPosX;
-	int mPosY;
+	int mPosI;
+	int mPosJ;
 
 	SDL_Rect clip;
-
-	int mVelX, mVelY;
 };
 
 #endif

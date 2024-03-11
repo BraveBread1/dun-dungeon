@@ -5,8 +5,8 @@ Tile::Tile(int x, int y, int tileType)
     mBox.x = x;
     mBox.y = y;
 
-    mBox.w = TILE_WIDTH;
-    mBox.h = TILE_HEIGHT;
+    mBox.w = TILE_LENG;
+    mBox.h = TILE_LENG;
 
     mType = tileType;
 }

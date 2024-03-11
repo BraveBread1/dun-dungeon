@@ -33,16 +33,13 @@ void close()
 	SDL_Quit();
 }
 
-bool setTiles(Tile* tiles[], SDL_Rect tileClips[])
+bool setTiles(Tile*** tiles, SDL_Rect tileClips[])
 {
 	//Success flag
 	bool tilesLoaded = true;
 
-	//The tile offsets
-	int x = 0, y = 0;
-
 	//Open the map
-	std::ifstream map("assests/map/lazy.map");
+	std::ifstream map("assests/map/map.map");
 
 	//If the map couldn't be loaded
 	if (map.fail())
@@ -53,113 +50,49 @@ bool setTiles(Tile* tiles[], SDL_Rect tileClips[])
 	else
 	{
 		//Initialize the tiles
-		for (int i = 0; i < TOTAL_TILES; ++i)
+		for (int i = 0; i < LEVEL_HEIGHT_CELL; ++i)
 		{
-			//Determines what kind of tile will be made
-			int tileType = -1;
-
-			//Read tile from map file
-			map >> tileType;
-
-			//If the was a problem in reading the map
-			if (map.fail())
+			for (int j = 0; j < LEVEL_WIDTH_CELL; ++j)
 			{
-				//Stop loading map
-				printf("Error loading map: Unexpected end of file!\n");
-				tilesLoaded = false;
-				break;
-			}
-
-			//If the number is a valid tile number
-			if ((tileType >= 0) && (tileType < TOTAL_TILE_SPRITES))
-			{
-				tiles[i] = new Tile(x, y, tileType);
-			}
-			//If we don't recognize the tile type
-			else
-			{
-				//Stop loading map
-				printf("Error loading map: Invalid tile type at %d!\n", i);
-				tilesLoaded = false;
-				break;
-			}
-
-			//Move to next tile spot
-			x += TILE_WIDTH;
-
-			//If we've gone too far
-			if (x >= LEVEL_WIDTH)
-			{
-				//Move back
-				x = 0;
-
-				//Move to the next row
-				y += TILE_HEIGHT;
+				int tileType = -1;
+				
+				map >> tileType;
+				if (map.fail())
+				{
+					std::cout << "Error loading map: Unexpected end of file!\n";
+					tilesLoaded = false;
+					break;
+				}
+				if ((tileType >= 0) && (tileType < TOTAL_TILE_SPRITES))
+				{
+					tiles[i][j] = new Tile(j * TILE_LENG, i * TILE_LENG, tileType);
+				}
+				else
+				{
+					std::cout << "Error loading map: Invalid tile type at %d!\n" << i * 35 + j;
+					tilesLoaded = false;
+					break;
+				}
 			}
 		}
 
 		//Clip the sprite sheet
 		if (tilesLoaded)
 		{
-			tileClips[TILE_RED].x = 0;
-			tileClips[TILE_RED].y = 0;
-			tileClips[TILE_RED].w = TILE_WIDTH;
-			tileClips[TILE_RED].h = TILE_HEIGHT;
+			tileClips[TILE_VOID].x = 0;
+			tileClips[TILE_VOID].y = 144;
+			tileClips[TILE_VOID].w = TILE_LENG;
+			tileClips[TILE_VOID].h = TILE_LENG;
 
-			tileClips[TILE_GREEN].x = 0;
-			tileClips[TILE_GREEN].y = 80;
-			tileClips[TILE_GREEN].w = TILE_WIDTH;
-			tileClips[TILE_GREEN].h = TILE_HEIGHT;
+			tileClips[TILE_WALL].x = 128;
+			tileClips[TILE_WALL].y = 64;
+			tileClips[TILE_WALL].w = TILE_LENG;
+			tileClips[TILE_WALL].h = TILE_LENG;
 
-			tileClips[TILE_BLUE].x = 0;
-			tileClips[TILE_BLUE].y = 160;
-			tileClips[TILE_BLUE].w = TILE_WIDTH;
-			tileClips[TILE_BLUE].h = TILE_HEIGHT;
-
-			tileClips[TILE_TOPLEFT].x = 80;
-			tileClips[TILE_TOPLEFT].y = 0;
-			tileClips[TILE_TOPLEFT].w = TILE_WIDTH;
-			tileClips[TILE_TOPLEFT].h = TILE_HEIGHT;
-
-			tileClips[TILE_LEFT].x = 80;
-			tileClips[TILE_LEFT].y = 80;
-			tileClips[TILE_LEFT].w = TILE_WIDTH;
-			tileClips[TILE_LEFT].h = TILE_HEIGHT;
-
-			tileClips[TILE_BOTTOMLEFT].x = 80;
-			tileClips[TILE_BOTTOMLEFT].y = 160;
-			tileClips[TILE_BOTTOMLEFT].w = TILE_WIDTH;
-			tileClips[TILE_BOTTOMLEFT].h = TILE_HEIGHT;
-
-			tileClips[TILE_TOP].x = 160;
-			tileClips[TILE_TOP].y = 0;
-			tileClips[TILE_TOP].w = TILE_WIDTH;
-			tileClips[TILE_TOP].h = TILE_HEIGHT;
-
-			tileClips[TILE_CENTER].x = 160;
-			tileClips[TILE_CENTER].y = 80;
-			tileClips[TILE_CENTER].w = TILE_WIDTH;
-			tileClips[TILE_CENTER].h = TILE_HEIGHT;
-
-			tileClips[TILE_BOTTOM].x = 160;
-			tileClips[TILE_BOTTOM].y = 160;
-			tileClips[TILE_BOTTOM].w = TILE_WIDTH;
-			tileClips[TILE_BOTTOM].h = TILE_HEIGHT;
-
-			tileClips[TILE_TOPRIGHT].x = 240;
-			tileClips[TILE_TOPRIGHT].y = 0;
-			tileClips[TILE_TOPRIGHT].w = TILE_WIDTH;
-			tileClips[TILE_TOPRIGHT].h = TILE_HEIGHT;
-
-			tileClips[TILE_RIGHT].x = 240;
-			tileClips[TILE_RIGHT].y = 80;
-			tileClips[TILE_RIGHT].w = TILE_WIDTH;
-			tileClips[TILE_RIGHT].h = TILE_HEIGHT;
-
-			tileClips[TILE_BOTTOMRIGHT].x = 240;
-			tileClips[TILE_BOTTOMRIGHT].y = 160;
-			tileClips[TILE_BOTTOMRIGHT].w = TILE_WIDTH;
-			tileClips[TILE_BOTTOMRIGHT].h = TILE_HEIGHT;
+			tileClips[TILE_ROAD].x = 0;
+			tileClips[TILE_ROAD].y = 0;
+			tileClips[TILE_ROAD].w = TILE_LENG;
+			tileClips[TILE_ROAD].h = TILE_LENG;
 		}
 	}
 
@@ -194,21 +127,26 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Player mPlayer;
-	if (mPlayer.loadFromFile("assests/sprite/avatars.png", mRenderer) == false)
+	Player mPlayer(7, 4);
+	if (mPlayer.loadFromFile("assests/sprite/warrior1.png", mRenderer) == false)
 	{
 		std::cout << "Failed to load sprite sheet texture!\n";
 	}
 	else
 	{
-		mPlayer.setClip(0, 0, mPlayer.getWidth() / 5, mPlayer.getHeight());
+		mPlayer.setClip(0, 15, PLAYER_WIDTH, PLAYER_HEIGHT);
 	}
 
 	SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
-	Tile* tileSet[TOTAL_TILES];
+
+	Tile*** tileSet = new Tile** [LEVEL_HEIGHT_CELL];
+	for (int i = 0; i < LEVEL_HEIGHT_CELL; ++i)
+	{
+		tileSet[i] = new Tile *[LEVEL_WIDTH_CELL];
+	}
 	LTexture tileTexture;
-	if (tileTexture.loadFromFile("assests/map/tiles.png", mRenderer) == false)
+	if (tileTexture.loadFromFile("assests/map/tiles_sewers.png", mRenderer) == false)
 	{
 		std::cout << "Failed to load tile set texture!\n";
 	}
@@ -231,18 +169,20 @@ int main(int argc, char* argv[])
 				quit = true;
 			}
 
-			mPlayer.handleEvent(e);
+			mPlayer.handleEvent(e, tileSet);
 		}
 
-		mPlayer.move(tileSet);
 		mPlayer.setCamera(camera);
 
 		SDL_SetRenderDrawColor(mRenderer, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR);
 		SDL_RenderClear(mRenderer);
 
-		for (int i = 0; i < TOTAL_TILES; ++i)
+		for (int i = 0; i < LEVEL_HEIGHT_CELL; ++i)
 		{
-			tileSet[i]->render(camera, tileTexture, tileClips[tileSet[i]->getType()], mRenderer);
+			for (int j = 0; j < LEVEL_WIDTH_CELL; ++j)
+			{
+				tileSet[i][j]->render(camera, tileTexture, tileClips[tileSet[i][j]->getType()], mRenderer);
+			}
 		}
 
 		mPlayer.render(mRenderer, camera.x, camera.y);
@@ -250,14 +190,21 @@ int main(int argc, char* argv[])
 		SDL_RenderPresent(mRenderer);
 	}
 
-	for (int i = 0; i < TOTAL_TILES; ++i)
+	for (int i = 0; i < LEVEL_HEIGHT_CELL; ++i)
 	{
-		if (tileSet[i] != NULL)
+		for (int j = 0; j < LEVEL_WIDTH_CELL; ++j)
 		{
-			delete tileSet[i];
-			tileSet[i] = NULL;
+			if (tileSet[i][j] != NULL)
+			{
+				delete tileSet[i][j];
+				tileSet[i][j] = NULL;
+			}
 		}
+		delete[] tileSet[i];
+		tileSet[i] = NULL;
 	}
+	delete[] tileSet;
+	tileSet = NULL;
 
 	SDL_DestroyRenderer(mRenderer);
 	mRenderer = NULL;

@@ -36,5 +36,4 @@ private:
 	int mHeight;
 };
 
-
 #endif

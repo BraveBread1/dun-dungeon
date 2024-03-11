@@ -1,33 +1,10 @@
 #include"Player.h"
 
-bool touchesWall(SDL_Rect box, Tile* tiles[])
+
+Player::Player(int i, int j)
 {
-	//Go through the tiles
-	for (int i = 0; i < TOTAL_TILES; ++i)
-	{
-		//If the tile is a wall type tile
-		if ((tiles[i]->getType() >= TILE_CENTER) && (tiles[i]->getType() <= TILE_TOPLEFT))
-		{
-			//If the collision box touches the wall tile
-			if (checkCollision(box, tiles[i]->getBox()))
-			{
-				return true;
-			}
-		}
-	}
-
-	//If no wall tiles were touched
-	return false;
-}
-
-
-Player::Player()
-{
-	mPosX = 0;
-	mPosY = 0;
-
-	mVelX = 0;
-	mVelY = 0;
+	mPosI = i;
+	mPosJ = j;
 }
 
 Player::~Player()
@@ -38,58 +15,40 @@ Player::~Player()
 void Player::FreePlayer()
 {
 	LTexture::free();
-	mPosX = 0;
-	mPosY = 0;
-
-	mVelX = 0;
-	mVelY = 0;
+	mPosI = 0;
+	mPosJ = 0;
 }
 
-void Player::handleEvent(SDL_Event& e)
+void Player::handleEvent(SDL_Event& e, Tile*** tiles)
 {
+	int i = mPosI;
+	int j = mPosJ;
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 	{
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_UP: mVelY -= PLAYER_VEL; break;
-		case SDLK_DOWN: mVelY += PLAYER_VEL; break;
-		case SDLK_LEFT: mVelX -= PLAYER_VEL; break;
-		case SDLK_RIGHT: mVelX += PLAYER_VEL; break;
+		case SDLK_UP: i -= 1; break;
+		case SDLK_DOWN: i += 1; break;
+		case SDLK_LEFT: j -= 1; break;
+		case SDLK_RIGHT: j += 1; break;
 		}
 	}
-	else if (e.type == SDL_KEYUP && e.key.repeat == 0)
+
+	bool isPath = true;
+	if (i < 0 || i >= LEVEL_HEIGHT_CELL) isPath = false;
+	else if (j < 0 || j >= LEVEL_HEIGHT) isPath = false;
+	else if (tiles[i][j]->getType() != TILE_ROAD) isPath = false;
+
+	if (isPath)
 	{
-		//Adjust the velocity
-		switch (e.key.keysym.sym)
-		{
-		case SDLK_UP: mVelY += PLAYER_VEL; break;
-		case SDLK_DOWN: mVelY -= PLAYER_VEL; break;
-		case SDLK_LEFT: mVelX += PLAYER_VEL; break;
-		case SDLK_RIGHT: mVelX -= PLAYER_VEL; break;
-		}
-	}
-}
-
-void Player::move(Tile* tiles[])
-{
-	mPosX += mVelX;
-
-	if ((mPosX < 0) || (mPosX + getClip().w > LEVEL_WIDTH) || touchesWall(clip, tiles))
-	{
-		mPosX -= mVelX;
-	}
-
-	mPosY += mVelY;
-
-	if ((mPosY < 0) || (mPosY + getClip().h > LEVEL_HEIGHT) || touchesWall(clip, tiles))
-	{
-		mPosY -= mVelY;
+		mPosI = i;
+		mPosJ = j;
 	}
 }
 
 void Player::render(SDL_Renderer* screen, int camX, int camY)
 {
-	LTexture::render(mPosX - camX, mPosY - camY, screen, &clip);
+	LTexture::render(mPosJ * TILE_LENG - camX, mPosI * TILE_LENG  - camY, screen, &clip);
 }
 
 void Player::setClip(int x, int y, int w, int h)
@@ -105,20 +64,20 @@ SDL_Rect Player::getClip()
 	return clip;
 }
 
-int Player::getPosX()
+int Player::getPosI()
 {
-	return mPosX;
+	return mPosI;
 }
 
-int Player::getPosY()
+int Player::getPosJ()
 {
-	return mPosY;
+	return mPosJ;
 }
 
 void Player::setCamera(SDL_Rect& camera)
 {
-	camera.x = (mPosX + (getWidth() / 5) / 2) - SCREEN_WIDTH / 2;
-	camera.y = (mPosY + getHeight() / 2) - SCREEN_HEIGHT / 2;
+	camera.x = (mPosJ * TILE_LENG + PLAYER_WIDTH / 2) - SCREEN_WIDTH / 2;
+	camera.y = (mPosI * TILE_LENG + PLAYER_HEIGHT / 2) - SCREEN_HEIGHT / 2;
 
 	if (camera.x < 0)
 	{
