@@ -7,8 +7,9 @@ bool init()
 {
 	bool success = true;
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 	{
+		std::cout << "SDL could not initialize! SDL Error: %s\n" << SDL_GetError();
 		return false;
 	}
 
@@ -20,6 +21,12 @@ bool init()
 	int imgFlags = IMG_INIT_PNG;
 	if (!(IMG_Init(imgFlags) & imgFlags))
 	{
+		std::cout << "SDL_image could not initialize! SDL_image Error: %s\n" << IMG_GetError();
+		success = false;
+	}
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	{
+		std::cout << "SDL_mixer could not initialize! SDL_mixer Error: %s\n" << Mix_GetError();
 		success = false;
 	}
 
@@ -28,7 +35,7 @@ bool init()
 
 void close()
 {
-
+	Mix_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }
@@ -127,7 +134,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Player mPlayer(7, 4);
+	Player mPlayer(6, 3);
 	if (mPlayer.loadFromFile("assests/sprite/warrior1.png", mRenderer) == false)
 	{
 		std::cout << "Failed to load sprite sheet texture!\n";
@@ -156,6 +163,15 @@ int main(int argc, char* argv[])
 	{
 		std::cout << "Failed to load tile set!\n";
 	}
+
+	Mix_Music* music = Mix_LoadMUS("assests/music/core_src_main_assets_music_sewers_1.ogg");
+
+	if (music == NULL)
+	{
+		std::cout << "failed to load music\n";
+	}
+
+	Mix_PlayMusic(music, -1);
 
 	SDL_Event e;
 	bool quit = false;
@@ -189,6 +205,9 @@ int main(int argc, char* argv[])
 
 		SDL_RenderPresent(mRenderer);
 	}
+
+	Mix_FreeMusic(music);
+	music = NULL;
 
 	for (int i = 0; i < LEVEL_HEIGHT_CELL; ++i)
 	{
