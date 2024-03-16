@@ -13,9 +13,9 @@ public:
 	~Player();
 
 	void FreePlayer();
-	void handleEvent(SDL_Event& e, Tile*** tiles);
-	void render(SDL_Renderer* screen, int camX, int camY);
-	void setCamera(SDL_Rect& camera);
+	void handleEvent(SDL_Event& e, Tile**** tiles);
+	void render(SDL_Renderer* screen, SDL_FRect& camera, float scale = 1);
+	void setCamera(SDL_FRect& camera, float scale);
 
 	void setClip(int x, int y, int w, int h);
 	SDL_Rect getClip();

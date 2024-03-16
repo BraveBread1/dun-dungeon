@@ -11,11 +11,11 @@
 #include<fstream>
 #include<vector>
 
-const int LEVEL_WIDTH = 560;
-const int LEVEL_HEIGHT = 480;
+const int LEVEL_WIDTH = 512;
+const int LEVEL_HEIGHT = 736;
 
-const int SCREEN_WIDTH = 560;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 1500;
+const int SCREEN_HEIGHT = 600;
 
 const int SCREEN_BPP = 32;
 
@@ -29,15 +29,16 @@ const int PLAYER_VEL = 16;
 const int PLAYER_HEIGHT = 15;
 const int PLAYER_WIDTH = 12;
 
-const int TILE_LENG = 16;
+const int TILE_SIZE = 16;
 const int TOTAL_TILES = 1050;
-const int TOTAL_TILE_SPRITES = 3;
+const int TOTAL_TILE_SPRITES = 257;
 
 const int TILE_VOID = 0;
 const int TILE_WALL = 1;
 const int TILE_ROAD = 2;
 
-const int LEVEL_WIDTH_CELL = 35;
-const int LEVEL_HEIGHT_CELL = 30;
+const int LEVEL1_ROWS = 46;
+const int LEVEL1_COLS = 32;
+const int LEVEL1_LAYERS = 3;
 
 #endif

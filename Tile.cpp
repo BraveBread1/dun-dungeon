@@ -5,27 +5,27 @@ Tile::Tile(int x, int y, int tileType)
     mBox.x = x;
     mBox.y = y;
 
-    mBox.w = TILE_LENG;
-    mBox.h = TILE_LENG;
+    mBox.w = TILE_SIZE;
+    mBox.h = TILE_SIZE;
 
     mType = tileType;
 }
 
-void Tile::render(SDL_Rect& camera, LTexture &tileTexture, SDL_Rect clip, SDL_Renderer* screen)
+void Tile::render(SDL_FRect& camera, LTexture &tileTexture, SDL_Rect clip, SDL_Renderer* screen, float scale)
 {
     if (checkCollision(camera, mBox))
     {
-        tileTexture.render(mBox.x - camera.x, mBox.y - camera.y, screen, &clip);
+        tileTexture.render(mBox.x - camera.x, mBox.y - camera.y, screen, &clip, scale);
     }
 }
 
-bool checkCollision(SDL_Rect a, SDL_Rect b)
+bool checkCollision(SDL_FRect a, SDL_FRect b)
 {
     //The sides of the rectangles
-    int leftA, leftB;
-    int rightA, rightB;
-    int topA, topB;
-    int bottomA, bottomB;
+    float leftA, leftB;
+    float rightA, rightB;
+    float topA, topB;
+    float bottomA, bottomB;
 
     //Calculate the sides of rect A
     leftA = a.x;
@@ -64,12 +64,13 @@ bool checkCollision(SDL_Rect a, SDL_Rect b)
     return true;
 }
 
+
 int Tile::getType()
 {
     return mType;
 }
 
-SDL_Rect Tile::getBox()
+SDL_FRect Tile::getBox()
 {
     return mBox;
 }

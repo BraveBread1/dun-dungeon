@@ -1,4 +1,4 @@
-#include"Player.h"
+﻿#include"Player.h"
 
 
 Player::Player(int i, int j)
@@ -19,7 +19,7 @@ void Player::FreePlayer()
 	mPosJ = 0;
 }
 
-void Player::handleEvent(SDL_Event& e, Tile*** tiles)
+void Player::handleEvent(SDL_Event& e, Tile**** tiles)
 {
 	int i = mPosI;
 	int j = mPosJ;
@@ -35,9 +35,7 @@ void Player::handleEvent(SDL_Event& e, Tile*** tiles)
 	}
 
 	bool isPath = true;
-	if (i < 0 || i >= LEVEL_HEIGHT_CELL) isPath = false;
-	else if (j < 0 || j >= LEVEL_HEIGHT) isPath = false;
-	else if (tiles[i][j]->getType() != TILE_ROAD) isPath = false;
+	if (tiles[0][i][j]->getType() != 1) isPath = false;
 
 	if (isPath)
 	{
@@ -46,9 +44,9 @@ void Player::handleEvent(SDL_Event& e, Tile*** tiles)
 	}
 }
 
-void Player::render(SDL_Renderer* screen, int camX, int camY)
+void Player::render(SDL_Renderer* screen, SDL_FRect& camera, float scale)
 {
-	LTexture::render(mPosJ * TILE_LENG - camX, mPosI * TILE_LENG  - camY, screen, &clip);
+	LTexture::render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE  - camera.y, screen, &clip, scale);
 }
 
 void Player::setClip(int x, int y, int w, int h)
@@ -74,25 +72,32 @@ int Player::getPosJ()
 	return mPosJ;
 }
 
-void Player::setCamera(SDL_Rect& camera)
+void Player::setCamera(SDL_FRect& camera, float scale)
 {
-	camera.x = (mPosJ * TILE_LENG + PLAYER_WIDTH / 2) - SCREEN_WIDTH / 2;
-	camera.y = (mPosI * TILE_LENG + PLAYER_HEIGHT / 2) - SCREEN_HEIGHT / 2;
+	// Tính toán vị trí trung tâm của nhân vật dựa trên tỷ lệ zoom
+	float playerCenterX = (mPosJ * TILE_SIZE + PLAYER_WIDTH / 2) * scale;
+	float playerCenterY = (mPosI * TILE_SIZE + PLAYER_HEIGHT / 2) * scale;
 
-	if (camera.x < 0)
+	// Điều chỉnh camera để nhân vật ở giữa màn hình, tính theo tỷ lệ zoom
+	camera.x = playerCenterX - SCREEN_WIDTH / 2.0f;
+	camera.y = playerCenterY - SCREEN_HEIGHT / 2.0f;
+
+	// Đảm bảo camera không đi ra ngoài giới hạn của bản đồ
+	camera.x = fmax(0.0f, camera.x);
+	camera.y = fmax(0.0f, camera.y);
+
+	// Điều chỉnh giới hạn dựa trên tỷ lệ zoom để camera không vượt quá biên của bản đồ
+	camera.x = fmin(camera.x, LEVEL_WIDTH * scale - SCREEN_WIDTH);
+	camera.y = fmin(camera.y, LEVEL_HEIGHT * scale - SCREEN_HEIGHT);
+
+	// Xử lý các trường hợp đặc biệt khi kích thước camera lớn hơn kích thước bản đồ
+	if (SCREEN_WIDTH >= LEVEL_WIDTH * scale)
 	{
-		camera.x = 0;
+		camera.x = -(SCREEN_WIDTH - LEVEL_WIDTH * scale) / 2.0f; // Giữ camera ở giữa theo chiều ngang
 	}
-	if (camera.y < 0)
+
+	if (SCREEN_HEIGHT >= LEVEL_HEIGHT * scale)
 	{
-		camera.y = 0;
-	}
-	if (camera.x > LEVEL_WIDTH - camera.w)
-	{
-		camera.x = LEVEL_WIDTH - camera.w;
-	}
-	if (camera.y > LEVEL_HEIGHT - camera.h)
-	{
-		camera.y = LEVEL_HEIGHT - camera.h;
+		camera.y = -(SCREEN_HEIGHT - LEVEL_HEIGHT * scale) / 2.0f; // Giữ camera ở giữa theo chiều dọc
 	}
 }

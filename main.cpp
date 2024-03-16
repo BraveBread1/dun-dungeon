@@ -1,7 +1,8 @@
-#include"CommonFunc.h"
+﻿#include"CommonFunc.h"
 #include"LTexture.h"
 #include"Player.h"
 #include"Tile.h"
+#include"Map.h"
 
 bool init()
 {
@@ -40,77 +41,6 @@ void close()
 	SDL_Quit();
 }
 
-bool setTiles(Tile*** tiles, SDL_Rect tileClips[])
-{
-	//Success flag
-	bool tilesLoaded = true;
-
-	//Open the map
-	std::ifstream map("assests/map/map.map");
-
-	//If the map couldn't be loaded
-	if (map.fail())
-	{
-		printf("Unable to load map file!\n");
-		tilesLoaded = false;
-	}
-	else
-	{
-		//Initialize the tiles
-		for (int i = 0; i < LEVEL_HEIGHT_CELL; ++i)
-		{
-			for (int j = 0; j < LEVEL_WIDTH_CELL; ++j)
-			{
-				int tileType = -1;
-				
-				map >> tileType;
-				if (map.fail())
-				{
-					std::cout << "Error loading map: Unexpected end of file!\n";
-					tilesLoaded = false;
-					break;
-				}
-				if ((tileType >= 0) && (tileType < TOTAL_TILE_SPRITES))
-				{
-					tiles[i][j] = new Tile(j * TILE_LENG, i * TILE_LENG, tileType);
-				}
-				else
-				{
-					std::cout << "Error loading map: Invalid tile type at %d!\n" << i * 35 + j;
-					tilesLoaded = false;
-					break;
-				}
-			}
-		}
-
-		//Clip the sprite sheet
-		if (tilesLoaded)
-		{
-			tileClips[TILE_VOID].x = 0;
-			tileClips[TILE_VOID].y = 144;
-			tileClips[TILE_VOID].w = TILE_LENG;
-			tileClips[TILE_VOID].h = TILE_LENG;
-
-			tileClips[TILE_WALL].x = 128;
-			tileClips[TILE_WALL].y = 64;
-			tileClips[TILE_WALL].w = TILE_LENG;
-			tileClips[TILE_WALL].h = TILE_LENG;
-
-			tileClips[TILE_ROAD].x = 0;
-			tileClips[TILE_ROAD].y = 0;
-			tileClips[TILE_ROAD].w = TILE_LENG;
-			tileClips[TILE_ROAD].h = TILE_LENG;
-		}
-	}
-
-	//Close the file
-	map.close();
-
-	//If the map was loaded fine
-	return tilesLoaded;
-}
-
-
 int main(int argc, char* argv[])
 {
 	if (init() == false)
@@ -135,7 +65,7 @@ int main(int argc, char* argv[])
 	}
 
 	Player mPlayer(6, 3);
-	if (mPlayer.loadFromFile("assests/sprite/warrior1.png", mRenderer) == false)
+	if (mPlayer.loadFromFile("assests/sprite/warrior.png", mRenderer) == false)
 	{
 		std::cout << "Failed to load sprite sheet texture!\n";
 	}
@@ -144,24 +74,21 @@ int main(int argc, char* argv[])
 		mPlayer.setClip(0, 15, PLAYER_WIDTH, PLAYER_HEIGHT);
 	}
 
-	SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+	SDL_FRect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
+	Map map1(LEVEL1_ROWS, LEVEL1_COLS, LEVEL1_LAYERS);
+	std::string* layerPathLevel1 = new std::string[LEVEL1_LAYERS];
+	layerPathLevel1[0] = "assests/map/tileMap/level1/layer1.map";
+	layerPathLevel1[1] = "assests/map/tileMap/level1/layer2.map";
+	layerPathLevel1[2] = "assests/map/tileMap/level1/layer3.map";
 
-	Tile*** tileSet = new Tile** [LEVEL_HEIGHT_CELL];
-	for (int i = 0; i < LEVEL_HEIGHT_CELL; ++i)
+	if (map1.setTileClips("assests/map/tiles_sewers.png", mRenderer) == false)
 	{
-		tileSet[i] = new Tile *[LEVEL_WIDTH_CELL];
+		std::cerr << "unable to set tile clips" << std::endl;
 	}
-	LTexture tileTexture;
-	if (tileTexture.loadFromFile("assests/map/tiles_sewers.png", mRenderer) == false)
+	if (map1.setTiles(layerPathLevel1) == false)
 	{
-		std::cout << "Failed to load tile set texture!\n";
-	}
-	SDL_Rect tileClips[TOTAL_TILE_SPRITES];
-
-	if (setTiles(tileSet, tileClips) == false)
-	{
-		std::cout << "Failed to load tile set!\n";
+		std::cerr << "unable to load tile set" << std::endl;
 	}
 
 	Mix_Music* music = Mix_LoadMUS("assests/music/core_src_main_assets_music_sewers_1.ogg");
@@ -176,6 +103,8 @@ int main(int argc, char* argv[])
 	SDL_Event e;
 	bool quit = false;
 
+	float scale = 1;
+
 	while (quit == false)
 	{
 		while (SDL_PollEvent(&e))
@@ -184,46 +113,38 @@ int main(int argc, char* argv[])
 			{
 				quit = true;
 			}
+			else if (e.type == SDL_MOUSEWHEEL)
+			{
+				if (e.wheel.y != 0)
+				{
+					scale += e.wheel.preciseY * 0.1;
+				}
+				if (scale < 1) scale = 1;
+				else if (scale >= 2) scale = 2;
+			}
 
-			mPlayer.handleEvent(e, tileSet);
+			mPlayer.handleEvent(e, map1.tileSet);
 		}
+		mPlayer.setCamera(camera, scale);
 
-		mPlayer.setCamera(camera);
 
-		SDL_SetRenderDrawColor(mRenderer, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR);
+
+		SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, RENDER_DRAW_COLOR);
 		SDL_RenderClear(mRenderer);
 
-		for (int i = 0; i < LEVEL_HEIGHT_CELL; ++i)
+		for (int i = 0; i < LEVEL1_LAYERS; ++i)
 		{
-			for (int j = 0; j < LEVEL_WIDTH_CELL; ++j)
-			{
-				tileSet[i][j]->render(camera, tileTexture, tileClips[tileSet[i][j]->getType()], mRenderer);
-			}
+			map1.renderLayer(camera, mRenderer, i, scale);
+			if(i == 0) mPlayer.render(mRenderer, camera, scale);
 		}
-
-		mPlayer.render(mRenderer, camera.x, camera.y);
 
 		SDL_RenderPresent(mRenderer);
 	}
 
 	Mix_FreeMusic(music);
 	music = NULL;
-
-	for (int i = 0; i < LEVEL_HEIGHT_CELL; ++i)
-	{
-		for (int j = 0; j < LEVEL_WIDTH_CELL; ++j)
-		{
-			if (tileSet[i][j] != NULL)
-			{
-				delete tileSet[i][j];
-				tileSet[i][j] = NULL;
-			}
-		}
-		delete[] tileSet[i];
-		tileSet[i] = NULL;
-	}
-	delete[] tileSet;
-	tileSet = NULL;
+	
+	map1.free();
 
 	SDL_DestroyRenderer(mRenderer);
 	mRenderer = NULL;
