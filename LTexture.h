@@ -11,10 +11,7 @@ public:
 
 	bool loadFromFile(std::string path, SDL_Renderer* screen);
 
-#if defined(SDL_TTF_MAJOR_VERSION)
-	//Creates image from font string
-	bool loadFromRenderedText(std::string textureText, SDL_Color textColor);
-#endif
+	bool loadFromRenderedText(std::string textureText, SDL_Color textColor, TTF_Font* font, SDL_Renderer* screen);
 
 	void free();
 

@@ -6,7 +6,7 @@
 #include"LTexture.h"
 #include"Tile.h"
 
-class Player : public LTexture
+class Player
 {
 public:
 	Player(int i, int j);
@@ -22,12 +22,15 @@ public:
 
 	int getPosI();
 	int getPosJ();
+	bool loadPlayerTexture(std::string path, SDL_Renderer* screen);
 
 private:
+	LTexture player;
 	int mPosI;
 	int mPosJ;
 
 	SDL_Rect clip;
+	
 };
 
 #endif

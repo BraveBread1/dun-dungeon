@@ -1,6 +1,5 @@
 ﻿#include"Player.h"
 
-
 Player::Player(int i, int j)
 {
 	mPosI = i;
@@ -14,7 +13,7 @@ Player::~Player()
 
 void Player::FreePlayer()
 {
-	LTexture::free();
+	player.free();
 	mPosI = 0;
 	mPosJ = 0;
 }
@@ -46,7 +45,7 @@ void Player::handleEvent(SDL_Event& e, Tile**** tiles)
 
 void Player::render(SDL_Renderer* screen, SDL_FRect& camera, float scale)
 {
-	LTexture::render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE  - camera.y, screen, &clip, scale);
+	player.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y, screen, &clip, scale);
 }
 
 void Player::setClip(int x, int y, int w, int h)
@@ -99,5 +98,17 @@ void Player::setCamera(SDL_FRect& camera, float scale)
 	if (SCREEN_HEIGHT >= LEVEL_HEIGHT * scale)
 	{
 		camera.y = -(SCREEN_HEIGHT - LEVEL_HEIGHT * scale) / 2.0f; // Giữ camera ở giữa theo chiều dọc
+	}
+}
+
+bool Player::loadPlayerTexture(std::string path, SDL_Renderer* screen)
+{
+	if (player.loadFromFile(path, screen))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }

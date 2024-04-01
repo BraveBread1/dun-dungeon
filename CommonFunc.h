@@ -40,4 +40,6 @@ const int TILE_ROAD = 2;
 const int LEVEL1_ROWS = 46;
 const int LEVEL1_COLS = 32;
 const int LEVEL1_LAYERS = 3;
+
+bool checkCollision(SDL_FRect a, SDL_FRect b);
 #endif

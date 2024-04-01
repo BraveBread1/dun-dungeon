@@ -20,6 +20,4 @@ private:
     int mType;
 };
 
-bool checkCollision(SDL_FRect a, SDL_FRect b);
-
 #endif

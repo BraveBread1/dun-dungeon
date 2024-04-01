@@ -6,7 +6,7 @@ Map::Map(int row, int col, int layer)
 	this->rows = row;
 	this->cols = col;
 	this->layers = layer;
-	tileSet = new Tile***[layer];
+	tileSet = new Tile * **[layer];
 }
 
 Map::~Map()
@@ -63,10 +63,10 @@ bool Map::setTiles(std::string* path)
 		}
 		else
 		{
-			tileSet[l] = new Tile ** [rows];
+			tileSet[l] = new Tile * *[rows];
 			for (int i = 0; i < rows; ++i)
 			{
-				tileSet[l][i] = new Tile*[cols];
+				tileSet[l][i] = new Tile * [cols];
 				for (int j = 0; j < cols; ++j)
 				{
 					int tileType = -1;
@@ -74,7 +74,7 @@ bool Map::setTiles(std::string* path)
 
 					if (in[l].fail())
 					{
-						std::cerr << "Error loading map: Unexpected end of file!\n";;
+						std::cerr << "Error loading map: Unexpected end of file!\n";
 						success = false;
 					}
 					if (tileType >= 0)
@@ -85,7 +85,7 @@ bool Map::setTiles(std::string* path)
 						std::cerr << "Error loading map: Invalid tile type at %d!" << i * rows + j;
 						success = false;
 					}
-					
+
 				}
 			}
 		}
@@ -107,7 +107,7 @@ bool Map::setTileClips(std::string path, SDL_Renderer* screen)
 	tileClips = new SDL_Rect[TOTAL_TILE_SPRITES];
 	for (int i = 1; i < TOTAL_TILE_SPRITES; ++i)
 	{
-		tileClips[i].x = ((i - 1) % 16 ) * 16;
+		tileClips[i].x = ((i - 1) % 16) * 16;
 		tileClips[i].y = ((i - 1) / 16) * 16;
 		tileClips[i].w = TILE_SIZE;
 		tileClips[i].h = TILE_SIZE;
@@ -127,14 +127,14 @@ LTexture Map::getTileTexture()
 
 void Map::renderLayer(SDL_FRect& camera, SDL_Renderer* screen, int layer, float scale)
 {
-		for (int i = 0; i < LEVEL1_ROWS; ++i)
+	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	{
+		for (int j = 0; j < LEVEL1_COLS; ++j)
 		{
-			for (int j = 0; j < LEVEL1_COLS; ++j)
+			if (tileSet[layer][i][j]->getType() != 0)
 			{
-				if (tileSet[layer][i][j]->getType() != 0)
-				{
-					tileSet[layer][i][j]->render(camera, tileTexture, tileClips[tileSet[layer][i][j]->getType()], screen, scale);
-				}
+				tileSet[layer][i][j]->render(camera, tileTexture, tileClips[tileSet[layer][i][j]->getType()], screen, scale);
 			}
 		}
+	}
 }
