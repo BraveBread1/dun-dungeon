@@ -10,6 +10,7 @@
 #include<sstream>
 #include<fstream>
 #include<vector>
+#include<cmath>
 
 const int LEVEL_WIDTH = 512;
 const int LEVEL_HEIGHT = 736;
@@ -41,5 +42,8 @@ const int LEVEL1_ROWS = 46;
 const int LEVEL1_COLS = 32;
 const int LEVEL1_LAYERS = 3;
 
+const int VIS_DISTANCE = 10;
+
 bool checkCollision(SDL_FRect a, SDL_FRect b);
+int getDistance(int i, int j, int mi, int mj);
 #endif

@@ -1,4 +1,4 @@
-#include"Game.h"
+﻿#include"Game.h"
 
 Game::Game()
 {
@@ -11,11 +11,46 @@ Game::Game()
 	mObjectLayer = NULL;
 	music = NULL;
 	scale = 1;
+	hasSolid = new bool* [LEVEL1_ROWS];
+	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	{
+		hasSolid[i] = new bool[LEVEL1_COLS];
+	}
 }
 
 Game::~Game()
 {
 	close();
+}
+
+void Game::close()
+{
+	Mix_FreeMusic(music);
+	music = NULL;
+
+	mMap->free();
+	mMap = NULL;
+
+	mPlayer->FreePlayer();
+	mPlayer = NULL;
+
+	mObjectLayer->free();
+	mObjectLayer = NULL;
+
+	winText.free();
+
+	clearSolidArr();
+
+	SDL_DestroyRenderer(mRenderer);
+	mRenderer = NULL;
+
+	SDL_DestroyWindow(mWindow);
+	mWindow = NULL;
+
+
+	Mix_Quit();
+	IMG_Quit();
+	SDL_Quit();
 }
 
 Player* Game::createPlayer(int startI, int startJ, std::string path)
@@ -84,6 +119,7 @@ void Game::handleEvent(SDL_Event e)
 		}
 
 		mPlayer->handleEvent(e, mMap->tileSet);
+		
 		int i = mPlayer->getPosI();
 		int j = mPlayer->getPosJ();
 		if (mObjectLayer->getObjSet()[i][j]->getType() == 18)
@@ -120,31 +156,15 @@ void Game::render()
 	SDL_RenderPresent(mRenderer);
 }
 
-void Game::close()
+void Game::clearSolidArr()
 {
-	Mix_FreeMusic(music);
-	music = NULL;
-
-	mMap->free();
-	mMap = NULL;
-
-	mPlayer->FreePlayer();
-	mPlayer = NULL;
-
-	mObjectLayer->free();
-	mObjectLayer = NULL;
-
-	winText.free();
-
-	SDL_DestroyRenderer(mRenderer);
-	mRenderer = NULL;
-
-	SDL_DestroyWindow(mWindow);
-	mWindow = NULL;
-
-	Mix_Quit();
-	IMG_Quit();
-	SDL_Quit();
+	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	{
+		delete[] hasSolid[i];
+		hasSolid[i] = NULL;
+	}
+	delete[] hasSolid;
+	hasSolid = NULL;
 }
 
 void Game::run()
@@ -155,6 +175,7 @@ void Game::run()
 	while (isPlaying)
 	{
 		handleEvent(*e);
+		updateFogOfWar();
 		render();
 	}
 }
@@ -244,4 +265,105 @@ bool Game::loadText(std::string path, int fontSize)
 	}
 	font = NULL;
 	return success;
+}
+
+void Game::updateFogOfWar()
+{
+	int j, i;
+	int mi, mj;
+	for (int l = 0; l < LEVEL1_LAYERS; ++l)
+	{
+		for (i = 0; i < LEVEL1_ROWS; i++)
+		{
+			for (j = 0; j < LEVEL1_COLS; j++)
+			{
+				mMap->tileSet[l][i][j]->setVisible(0);
+				hasSolid[i][j] = 0;
+			}
+		}
+	}
+
+	for (int l = 0; l < LEVEL1_LAYERS; ++l)
+	{
+		for (i = 0; i < LEVEL1_ROWS; i++)
+		{
+			for (j = 0; j < LEVEL1_COLS; j++)
+			{
+				if (mMap->tileSet[l][i][j]->getSolid())
+				{
+					hasSolid[i][j] = 1;
+				}
+			}
+		}
+	}
+
+
+	for (i = -VIS_DISTANCE; i <= VIS_DISTANCE; i++)
+	{
+		for (j = -VIS_DISTANCE; j <= VIS_DISTANCE; j++)
+		{
+			mi = mPlayer->getPosI() + i;
+			mj = mPlayer->getPosJ() + j;
+
+			if (getDistance(mPlayer->getPosJ(), mPlayer->getPosI(), mj, mi) <= VIS_DISTANCE)
+			{
+				if (mi >= 0 && mj >= 0 && mj < LEVEL1_COLS && mi < LEVEL1_ROWS)
+				{
+					for (int l = 0; l < LEVEL1_LAYERS; ++l)
+					{
+						if (!mMap->tileSet[l][mi][mj]->getVisible() && hasLOS(mi, mj))
+						{
+							mMap->tileSet[l][mi][mj]->setRevealed(1);
+							mMap->tileSet[l][mi][mj]->setVisible(1);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+int Game::hasLOS(int i2, int j2)
+{
+	int i1, j1, di, dj, si, sj, err, e2;
+	i1 = mPlayer->getPosI();
+	j1 = mPlayer->getPosJ();
+
+	di = abs(i2 - i1);
+	dj = abs(j2 - j1);
+
+	si = (i1 < i2) ? 1 : -1;
+	sj = (j1 < j2) ? 1 : -1;
+	err = dj - di;
+
+	while (1)
+	{
+		e2 = 2 * err;
+
+		if (e2 > -di)
+		{
+			err -= di;
+			j1 += sj;
+		}
+
+		if (e2 < dj)
+		{
+			err += dj;
+			i1 += si;
+		}
+
+		if (j1 == j2 && i1 == i2)
+		{
+			return 1;
+		}
+
+		if (hasSolid[i1][j1])
+		{
+			return 0;
+		}
+
+	}
+
+
+	return 0;
 }

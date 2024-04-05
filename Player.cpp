@@ -85,19 +85,23 @@ void Player::setCamera(SDL_FRect& camera, float scale)
 	camera.x = fmax(0.0f, camera.x);
 	camera.y = fmax(0.0f, camera.y);
 
-	// Điều chỉnh giới hạn dựa trên tỷ lệ zoom để camera không vượt quá biên của bản đồ
-	camera.x = fmin(camera.x, LEVEL_WIDTH * scale - SCREEN_WIDTH);
-	camera.y = fmin(camera.y, LEVEL_HEIGHT * scale - SCREEN_HEIGHT);
+	// Tính toán giới hạn tối đa của camera dựa trên kích thước của bản đồ
+	float maxCameraX = LEVEL_WIDTH * scale - SCREEN_WIDTH;
+	float maxCameraY = LEVEL_HEIGHT * scale - SCREEN_HEIGHT;
 
-	// Xử lý các trường hợp đặc biệt khi kích thước camera lớn hơn kích thước bản đồ
+	// Đảm bảo camera không vượt quá biên của bản đồ
+	camera.x = fmin(camera.x, maxCameraX);
+	camera.y = fmin(camera.y, maxCameraY);
+
+	// Xử lý trường hợp đặc biệt khi kích thước camera lớn hơn kích thước bản đồ
 	if (SCREEN_WIDTH >= LEVEL_WIDTH * scale)
 	{
-		camera.x = -(SCREEN_WIDTH - LEVEL_WIDTH * scale) / 2.0f; // Giữ camera ở giữa theo chiều ngang
+		camera.x = (LEVEL_WIDTH * scale - SCREEN_WIDTH) / 2.0f; // Giữ camera ở giữa theo chiều ngang
 	}
 
 	if (SCREEN_HEIGHT >= LEVEL_HEIGHT * scale)
 	{
-		camera.y = -(SCREEN_HEIGHT - LEVEL_HEIGHT * scale) / 2.0f; // Giữ camera ở giữa theo chiều dọc
+		camera.y = (LEVEL_HEIGHT * scale - SCREEN_HEIGHT) / 2.0f; // Giữ camera ở giữa theo chiều dọc
 	}
 }
 

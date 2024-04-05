@@ -30,11 +30,11 @@
             "expandedGroupLayers": [
                 6
             ],
-            "scale": 1.5,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 329.33333333333337,
-                "y": 15.666666666666629
+                "x": 257,
+                "y": 347.5
             }
         },
         "map1.tmx#tiles_sewers": {

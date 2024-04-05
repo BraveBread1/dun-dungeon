@@ -44,3 +44,11 @@ bool checkCollision(SDL_FRect a, SDL_FRect b)
     //If none of the sides from A are outside B
     return true;
 }
+
+int getDistance(int i, int j, int mi, int mj)
+{
+    int di = abs(mi - i);
+    int dj = abs(mj - j);
+
+    return di + dj;
+}

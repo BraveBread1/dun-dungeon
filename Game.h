@@ -22,8 +22,12 @@ public:
 	void render();
 	void handleEvent(SDL_Event e);
 	bool loadText(std::string path, int fontSize);
+	void clearSolidArr();
+	void updateFogOfWar();
+	int hasLOS(int x2, int y2);
 
 private:
+	bool** hasSolid;
 	bool isPlaying;
 	bool win;
 	SDL_Window* mWindow;

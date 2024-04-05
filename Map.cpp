@@ -77,9 +77,13 @@ bool Map::setTiles(std::string* path)
 						std::cerr << "Error loading map: Unexpected end of file!\n";
 						success = false;
 					}
-					if (tileType >= 0)
+					if (tileType >= 49 && tileType <= 192)
 					{
-						tileSet[l][i][j] = new Tile(j * TILE_SIZE, i * TILE_SIZE, tileType);
+						tileSet[l][i][j] = new Tile(j * TILE_SIZE, i * TILE_SIZE, tileType, 1);
+					}
+					else if (tileType >= 0)
+					{
+						tileSet[l][i][j] = new Tile(j * TILE_SIZE, i * TILE_SIZE, tileType, 0);
 					}
 					else {
 						std::cerr << "Error loading map: Invalid tile type at %d!" << i * rows + j;
@@ -91,7 +95,7 @@ bool Map::setTiles(std::string* path)
 		}
 		in[l].close();
 	}
-	delete[]  in;
+	delete[] in;
 	in = NULL;
 	return success;
 }
