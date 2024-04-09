@@ -34,7 +34,7 @@ void Player::handleEvent(SDL_Event& e, Tile**** tiles)
 	}
 
 	bool isPath = true;
-	if (tiles[0][i][j]->getType() != 1) isPath = false;
+	if (tiles[0][i][j]->getType() > 21 || tiles[0][i][j]->getType() < 1) isPath = false;
 
 	if (isPath)
 	{
@@ -45,7 +45,14 @@ void Player::handleEvent(SDL_Event& e, Tile**** tiles)
 
 void Player::render(SDL_Renderer* screen, SDL_FRect& camera, float scale)
 {
-	player.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y, screen, &clip, scale);
+	player.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 6, screen, &clip, scale);
+	renderHp(screen, camera, scale);
+}
+
+void Player::renderHp(SDL_Renderer* screen, SDL_FRect& camera, float scale)
+{
+	redHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &redHpClip, scale);
+	greenHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &greenHpClip, scale);
 }
 
 void Player::setClip(int x, int y, int w, int h)
@@ -115,4 +122,45 @@ bool Player::loadPlayerTexture(std::string path, SDL_Renderer* screen)
 	{
 		return false;
 	}
+}
+
+void Player::setPosI(int i)
+{
+	mPosI = i;
+}
+
+void Player::setPosJ(int j)
+{
+	mPosJ = j;
+}
+
+void Player::attack(Entity* target)
+{
+	target->attacked(dame);
+}
+
+void Player::setGreenHpClip(int x, int y, int w, int h)
+{
+	greenHpClip.x = x;
+	greenHpClip.y = y;
+	greenHpClip.w = w;
+	greenHpClip.h = h;
+}
+
+void Player::setRedHpClip(int x, int y, int w, int h)
+{
+	redHpClip.x = x;
+	redHpClip.y = y;
+	redHpClip.w = w;
+	redHpClip.h = h;
+}
+
+bool Player::loadHpTexture(std::string path1, std::string path2, SDL_Renderer* screen)
+{
+	bool success = true;
+	if (greenHp.loadFromFile(path1, screen) == false) success = false;
+	setGreenHpClip(0, 0, 16, 2);
+	if (redHp.loadFromFile(path2, screen) == false) success = false;
+	setRedHpClip(0, 0, 16, 2);
+	return success;
 }

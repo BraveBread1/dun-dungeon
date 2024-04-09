@@ -9,6 +9,9 @@
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
         ":/automap-tiles.tsx": {
             "scaleInDock": 1
         },
@@ -30,15 +33,24 @@
             "expandedGroupLayers": [
                 6
             ],
-            "scale": 1,
-            "selectedLayer": 0,
+            "scale": 1.5,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 257,
-                "y": 347.5
+                "x": 280.66666666666663,
+                "y": 329.66666666666663
             }
+        },
+        "map1.tmx#rat": {
+            "scaleInDock": 1
+        },
+        "map1.tmx#tile": {
+            "scaleInEditor": 1
         },
         "map1.tmx#tiles_sewers": {
             "scaleInDock": 1
+        },
+        "map1.tmx#water0": {
+            "scaleInDock": 5.5
         },
         "map_test.tmx": {
             "scale": 1.6862499999999998,
@@ -55,7 +67,7 @@
         }
     },
     "last.externalTilesetPath": "C:/Users/admin/projects/Dun dungeon game vs/Dun dungeon game/assests/map/tileMap",
-    "last.imagePath": "C:/Users/admin/projects/Dun dungeon game vs/Dun dungeon game/assests/map",
+    "last.imagePath": "C:/Users/admin/projects/Dun dungeon game vs/Dun dungeon game/assests/map/tileMap",
     "map.fixedSize": true,
     "map.height": 30,
     "map.lastUsedFormat": "tmx",
@@ -73,7 +85,7 @@
         "map_test.tmx",
         "C:/Users/admin/Downloads/platform.tmx"
     ],
-    "tileset.embedInMap": false,
+    "tileset.embedInMap": true,
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

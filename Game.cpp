@@ -10,6 +10,9 @@ Game::Game()
 	mMap = NULL;
 	mObjectLayer = NULL;
 	music = NULL;
+	
+	mEntLayer = NULL;
+
 	scale = 1;
 	hasSolid = new bool* [LEVEL1_ROWS];
 	for (int i = 0; i < LEVEL1_ROWS; ++i)
@@ -36,6 +39,9 @@ void Game::close()
 
 	mObjectLayer->free();
 	mObjectLayer = NULL;
+
+	mEntLayer->free();
+	mEntLayer = NULL;
 
 	winText.free();
 
@@ -64,6 +70,11 @@ Player* Game::createPlayer(int startI, int startJ, std::string path)
 	{
 		player->setClip(0, 15, PLAYER_WIDTH, PLAYER_HEIGHT);
 	}
+
+	if (player->loadHpTexture("assests/img/green_hp.png", "assests/img/green_hp.png", mRenderer) == false)
+	{
+		std::cerr << "Failed to load hp texture" << std::endl;
+	}
 	return player;
 }
 
@@ -71,11 +82,13 @@ Map* Game::createMap()
 {
 	Map* map = new Map(LEVEL1_ROWS, LEVEL1_COLS, LEVEL1_LAYERS);
 	std::string* layerPathLevel1 = new std::string[LEVEL1_LAYERS];
-	layerPathLevel1[0] = "assests/map/tileMap/level1/layer1.map";
-	layerPathLevel1[1] = "assests/map/tileMap/level1/layer2.map";
-	layerPathLevel1[2] = "assests/map/tileMap/level1/layer3.map";
+	layerPathLevel1[0] = "assests/map/tileMap/level1/ground.map";
+	layerPathLevel1[1] = "assests/map/tileMap/level1/water.map";
+	layerPathLevel1[2] = "assests/map/tileMap/level1/decor.map";
+	layerPathLevel1[3] = "assests/map/tileMap/level1/wall1.map";
+	layerPathLevel1[4] = "assests/map/tileMap/level1/wall2.map";
 
-	if (map->setTileClips("assests/map/tiles_sewers.png", mRenderer) == false)
+	if (map->setTileClips("assests/map/tile.png", mRenderer) == false)
 	{
 		std::cerr << "unable to set tile clips" << std::endl;
 	}
@@ -141,12 +154,15 @@ void Game::render()
 		for (int i = 0; i < LEVEL1_LAYERS; ++i)
 		{
 			mMap->renderLayer(camera, mRenderer, i, scale);
-			if (i == 0)
+			if (i == 3)
 			{
 				mObjectLayer->render(camera, mRenderer, scale);
 				mPlayer->render(mRenderer, camera, scale);
+				mEntLayer->render(camera, mRenderer, scale);
+				
 			}
 		}
+		
 	}
 	else
 	{
@@ -238,6 +254,31 @@ bool Game::gameInit()
 	{
 		std::cerr << "unable to load win text" << std::endl;
 	}
+
+	mEntLayer = new EntityLayer(LEVEL1_ROWS, LEVEL1_COLS);
+
+	if (mEntLayer->setPosition("assests/map/tileMap/level1/entity.map") == false)
+	{
+		flag = false;
+		std::cerr << "unable to load entity map" << std::endl;
+	}
+	else
+	{
+		std::string entPath[1];
+		entPath[0] = "assests/sprite/rat.png";
+		if (mEntLayer->loadEntTextureSet(entPath, mRenderer) == false)
+		{
+			flag = false;
+			std::cerr << "unable to load entity texture" << std::endl;
+		}
+
+		if (mEntLayer->loadHpTexture("assests/img/green_hp.png", "assests/img/red_hp.png", mRenderer) == false)
+		{
+			flag = false;
+			std::cerr << "unable to load entity's hp texture" << std::endl;
+		}
+	}
+
 
 	music = Mix_LoadMUS("assests/music/core_src_main_assets_music_sewers_1.ogg");
 
@@ -366,4 +407,38 @@ int Game::hasLOS(int i2, int j2)
 
 
 	return 0;
+}
+
+void Game::doPlayer(SDL_Event& e)
+{
+	int i = mPlayer->getPosI();
+	int j = mPlayer->getPosJ();
+	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+	{
+		switch (e.key.keysym.sym)
+		{
+		case SDLK_UP: i -= 1; break;
+		case SDLK_DOWN: i += 1; break;
+		case SDLK_LEFT: j -= 1; break;
+		case SDLK_RIGHT: j += 1; break;
+		}
+	}
+
+	bool isPath = true;
+	if (mMap->tileSet[0][i][j]->getType() != 1) isPath = false;
+
+	bool isMonster = false;
+	Entity* target = mEntLayer->checkEntCollision(i, j);
+	if (target != NULL)
+	{
+		isMonster = true;
+		mPlayer->attack(target);
+	}
+
+
+	if (isPath && isMonster == false)
+	{
+		mPlayer->setPosI(i);
+		mPlayer->setPosJ(j);
+	}
 }

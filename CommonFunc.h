@@ -32,17 +32,15 @@ const int PLAYER_WIDTH = 12;
 
 const int TILE_SIZE = 16;
 const int TOTAL_TILES = 1050;
-const int TOTAL_TILE_SPRITES = 257;
-
-const int TILE_VOID = 0;
-const int TILE_WALL = 1;
-const int TILE_ROAD = 2;
+const int TOTAL_TILE_SPRITES = 273;
 
 const int LEVEL1_ROWS = 46;
 const int LEVEL1_COLS = 32;
-const int LEVEL1_LAYERS = 3;
+const int LEVEL1_LAYERS = 5;
 
-const int VIS_DISTANCE = 10;
+const int MAX_MONSTER_TYPE = 1;
+
+const int VIS_DISTANCE = 8;
 
 bool checkCollision(SDL_FRect a, SDL_FRect b);
 int getDistance(int i, int j, int mi, int mj);

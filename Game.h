@@ -6,6 +6,8 @@
 #include"Player.h"
 #include"Map.h"
 #include"ObjectLayer.h"
+#include"Entity.h"
+#include"EntityLayer.h"
 
 class Game
 {
@@ -25,6 +27,8 @@ public:
 	void clearSolidArr();
 	void updateFogOfWar();
 	int hasLOS(int x2, int y2);
+	void doPlayer(SDL_Event& e);
+	void doEntity();
 
 private:
 	bool** hasSolid;
@@ -39,6 +43,7 @@ private:
 	float scale;
 	Mix_Music* music;
 	LTexture winText;
+	EntityLayer* mEntLayer;
 };
 
 #endif
