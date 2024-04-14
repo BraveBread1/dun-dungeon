@@ -139,8 +139,10 @@
     <ClCompile Include="CommonFunc.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityLayer.cpp" />
+    <ClCompile Include="FogOfWar.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="LTexture.cpp" />
+    <ClCompile Include="LTimer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Monster.cpp" />
@@ -153,8 +155,10 @@
     <ClInclude Include="CommonFunc.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityLayer.h" />
+    <ClInclude Include="FogOfWar.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="LTexture.h" />
+    <ClInclude Include="LTimer.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="Object.h" />

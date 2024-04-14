@@ -40,7 +40,11 @@ const int LEVEL1_LAYERS = 5;
 
 const int MAX_MONSTER_TYPE = 1;
 
-const int VIS_DISTANCE = 8;
+const int VIS_DISTANCE = 6;
+
+const Uint8 HALF_FOG = 175;
+const Uint8 FULL_FOG = 255;
+const Uint8 NONE_FOG = 0;
 
 bool checkCollision(SDL_FRect a, SDL_FRect b);
 int getDistance(int i, int j, int mi, int mj);

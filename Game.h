@@ -8,6 +8,8 @@
 #include"ObjectLayer.h"
 #include"Entity.h"
 #include"EntityLayer.h"
+#include"LTimer.h"
+#include"FogOfWar.h"
 
 class Game
 {
@@ -29,6 +31,8 @@ public:
 	int hasLOS(int x2, int y2);
 	void doPlayer(SDL_Event& e);
 	void doEntity();
+	Entity::Dest pathFinding(Entity* monster);
+
 
 private:
 	bool** hasSolid;
@@ -44,6 +48,8 @@ private:
 	Mix_Music* music;
 	LTexture winText;
 	EntityLayer* mEntLayer;
+	LTimer timer;
+	FogOfWar* fogOfWar;
 };
 
 #endif

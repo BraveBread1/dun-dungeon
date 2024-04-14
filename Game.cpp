@@ -13,6 +13,8 @@ Game::Game()
 	
 	mEntLayer = NULL;
 
+	fogOfWar = NULL;
+
 	scale = 1;
 	hasSolid = new bool* [LEVEL1_ROWS];
 	for (int i = 0; i < LEVEL1_ROWS; ++i)
@@ -42,6 +44,9 @@ void Game::close()
 
 	mEntLayer->free();
 	mEntLayer = NULL;
+
+	fogOfWar->free();
+	fogOfWar = NULL;
 
 	winText.free();
 
@@ -131,14 +136,16 @@ void Game::handleEvent(SDL_Event e)
 			/*else if (scale >= 2.5) scale = 2.5;*/
 		}
 
-		mPlayer->handleEvent(e, mMap->tileSet);
-		
-		int i = mPlayer->getPosI();
-		int j = mPlayer->getPosJ();
-		if (mObjectLayer->getObjSet()[i][j]->getType() == 18)
+
+
+		doPlayer(e);
+		if (mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->getType() == 18)
 		{
 			win = true;
 		}
+
+		doEntity();
+
 	}
 }
 
@@ -158,7 +165,7 @@ void Game::render()
 			{
 				mObjectLayer->render(camera, mRenderer, scale);
 				mPlayer->render(mRenderer, camera, scale);
-				mEntLayer->render(camera, mRenderer, scale);
+				mEntLayer->render(camera, mRenderer, timer.getTicks(), scale);
 				
 			}
 		}
@@ -168,6 +175,8 @@ void Game::render()
 	{
 		winText.render((SCREEN_WIDTH - winText.getWidth()) / 2, (SCREEN_HEIGHT - winText.getHeight()) / 2, mRenderer);
 	}
+
+	fogOfWar->render(camera, mRenderer, scale);
 
 	SDL_RenderPresent(mRenderer);
 }
@@ -191,7 +200,9 @@ void Game::run()
 	while (isPlaying)
 	{
 		handleEvent(*e);
-		updateFogOfWar();
+		/*updateFogOfWar();*/
+		fogOfWar->updateSolid(mMap->getTileSet());
+		fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
 		render();
 	}
 }
@@ -279,6 +290,14 @@ bool Game::gameInit()
 		}
 	}
 
+	fogOfWar = new FogOfWar;
+	if (fogOfWar->loadFogTexture("assests/img/fog.png", mRenderer) == false)
+	{
+		flag = false;
+	}
+
+	timer.start();
+
 
 	music = Mix_LoadMUS("assests/music/core_src_main_assets_music_sewers_1.ogg");
 
@@ -308,61 +327,61 @@ bool Game::loadText(std::string path, int fontSize)
 	return success;
 }
 
-void Game::updateFogOfWar()
-{
-	int j, i;
-	int mi, mj;
-	for (int l = 0; l < LEVEL1_LAYERS; ++l)
-	{
-		for (i = 0; i < LEVEL1_ROWS; i++)
-		{
-			for (j = 0; j < LEVEL1_COLS; j++)
-			{
-				mMap->tileSet[l][i][j]->setVisible(0);
-				hasSolid[i][j] = 0;
-			}
-		}
-	}
-
-	for (int l = 0; l < LEVEL1_LAYERS; ++l)
-	{
-		for (i = 0; i < LEVEL1_ROWS; i++)
-		{
-			for (j = 0; j < LEVEL1_COLS; j++)
-			{
-				if (mMap->tileSet[l][i][j]->getSolid())
-				{
-					hasSolid[i][j] = 1;
-				}
-			}
-		}
-	}
-
-
-	for (i = -VIS_DISTANCE; i <= VIS_DISTANCE; i++)
-	{
-		for (j = -VIS_DISTANCE; j <= VIS_DISTANCE; j++)
-		{
-			mi = mPlayer->getPosI() + i;
-			mj = mPlayer->getPosJ() + j;
-
-			if (getDistance(mPlayer->getPosJ(), mPlayer->getPosI(), mj, mi) <= VIS_DISTANCE)
-			{
-				if (mi >= 0 && mj >= 0 && mj < LEVEL1_COLS && mi < LEVEL1_ROWS)
-				{
-					for (int l = 0; l < LEVEL1_LAYERS; ++l)
-					{
-						if (!mMap->tileSet[l][mi][mj]->getVisible() && hasLOS(mi, mj))
-						{
-							mMap->tileSet[l][mi][mj]->setRevealed(1);
-							mMap->tileSet[l][mi][mj]->setVisible(1);
-						}
-					}
-				}
-			}
-		}
-	}
-}
+//void Game::updateFogOfWar()
+//{
+//	int j, i;
+//	int mi, mj;
+//	for (int l = 0; l < LEVEL1_LAYERS; ++l)
+//	{
+//		for (i = 0; i < LEVEL1_ROWS; i++)
+//		{
+//			for (j = 0; j < LEVEL1_COLS; j++)
+//			{
+//				mMap->tileSet[l][i][j]->setVisible(0);
+//				hasSolid[i][j] = 0;
+//			}
+//		}
+//	}
+//
+//	for (int l = 0; l < LEVEL1_LAYERS; ++l)
+//	{
+//		for (i = 0; i < LEVEL1_ROWS; i++)
+//		{
+//			for (j = 0; j < LEVEL1_COLS; j++)
+//			{
+//				if (mMap->tileSet[l][i][j]->getSolid())
+//				{
+//					hasSolid[i][j] = 1;
+//				}
+//			}
+//		}
+//	}
+//
+//
+//	for (i = -VIS_DISTANCE; i <= VIS_DISTANCE; i++)
+//	{
+//		for (j = -VIS_DISTANCE; j <= VIS_DISTANCE; j++)
+//		{
+//			mi = mPlayer->getPosI() + i;
+//			mj = mPlayer->getPosJ() + j;
+//
+//			if (getDistance(mPlayer->getPosJ(), mPlayer->getPosI(), mj, mi) <= VIS_DISTANCE)
+//			{
+//				if (mi >= 0 && mj >= 0 && mj < LEVEL1_COLS && mi < LEVEL1_ROWS)
+//				{
+//					for (int l = 0; l < LEVEL1_LAYERS; ++l)
+//					{
+//						if (!mMap->tileSet[l][mi][mj]->getVisible() && hasLOS(mi, mj))
+//						{
+//							mMap->tileSet[l][mi][mj]->setRevealed(1);
+//							mMap->tileSet[l][mi][mj]->setVisible(1);
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
 
 int Game::hasLOS(int i2, int j2)
 {
@@ -404,8 +423,6 @@ int Game::hasLOS(int i2, int j2)
 		}
 
 	}
-
-
 	return 0;
 }
 
@@ -419,13 +436,21 @@ void Game::doPlayer(SDL_Event& e)
 		{
 		case SDLK_UP: i -= 1; break;
 		case SDLK_DOWN: i += 1; break;
-		case SDLK_LEFT: j -= 1; break;
-		case SDLK_RIGHT: j += 1; break;
+		case SDLK_LEFT:
+		{
+			mPlayer->setFacing(0);
+			j -= 1; break;
+		}
+		case SDLK_RIGHT:
+		{
+			mPlayer->setFacing(1);
+			j += 1; break;
+		}
 		}
 	}
 
 	bool isPath = true;
-	if (mMap->tileSet[0][i][j]->getType() != 1) isPath = false;
+	if (mMap->tileSet[0][i][j]->getType() > 21 || mMap->tileSet[0][i][j]->getType() < 1) isPath = false;
 
 	bool isMonster = false;
 	Entity* target = mEntLayer->checkEntCollision(i, j);
@@ -433,6 +458,10 @@ void Game::doPlayer(SDL_Event& e)
 	{
 		isMonster = true;
 		mPlayer->attack(target);
+		if (target->getDead())
+		{
+			mEntLayer->delEnt(target);
+		}
 	}
 
 
@@ -441,4 +470,79 @@ void Game::doPlayer(SDL_Event& e)
 		mPlayer->setPosI(i);
 		mPlayer->setPosJ(j);
 	}
+}
+
+void Game::doEntity()
+{
+	Entity* currentMonster = mEntLayer->getHead();
+	while (currentMonster != NULL)
+	{
+		if (hasLOS(currentMonster->getPosI(), currentMonster->getPosJ()))
+		{
+			if (currentMonster->nextToPlayer(mPlayer->getPosI(), mPlayer->getPosJ()))
+			{
+				mPlayer->attacked(currentMonster);
+			}
+			else
+			{
+				currentMonster->setPath(pathFinding(currentMonster));
+				currentMonster->move();
+			}
+		}
+		currentMonster = currentMonster->next;
+	}
+}
+
+Entity::Dest Game::pathFinding(Entity* monster)
+{
+	int playerI = mPlayer->getPosI();
+	int playerJ = mPlayer->getPosJ();
+
+	int monsI = monster->getPosI();
+	int monsJ = monster->getPosJ();
+
+	Entity::Dest go = Entity::Dest::NONE;
+
+	if (playerI < monsI)
+	{
+		if (playerJ < monsJ)
+		{
+			go = Entity::Dest::LEFT;
+		}
+		else if (playerJ > monsJ)
+		{
+			go = Entity::Dest::RIGHT;
+		}
+		else
+		{
+			go = Entity::Dest::UP;
+		}
+	}
+	else if (playerI > monsI)
+	{
+		if (playerJ < monsJ)
+		{
+			go = Entity::Dest::LEFT;
+		}
+		else if (playerJ > monsJ)
+		{
+			go = Entity::Dest::RIGHT;
+		}
+		else
+		{
+			go = Entity::Dest::DOWN;
+		}
+	}
+	else
+	{
+		if (playerJ < monsJ)
+		{
+			go = Entity::Dest::LEFT;
+		}
+		else
+		{
+			go = Entity::Dest::RIGHT;
+		}
+	}
+	return go;
 }

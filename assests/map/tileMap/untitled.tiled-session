@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map1.tmx",
+    "activeFile": "tiles_sewers.tsx",
     "expandedProjectPaths": [
         "."
     ],
@@ -36,8 +36,8 @@
             "scale": 1.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 280.66666666666663,
-                "y": 329.66666666666663
+                "x": 279.99999999999994,
+                "y": 328.33333333333337
             }
         },
         "map1.tmx#rat": {
@@ -80,8 +80,8 @@
     ],
     "project": "untitled.tiled-project",
     "recentFiles": [
-        "tiles_sewers.tsx",
         "map1.tmx",
+        "tiles_sewers.tsx",
         "map_test.tmx",
         "C:/Users/admin/Downloads/platform.tmx"
     ],

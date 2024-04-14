@@ -99,14 +99,14 @@ bool EntityLayer::loadEntTextureSet(std::string* path, SDL_Renderer* screen)
 	return success;
 }
 
-void EntityLayer::render(SDL_FRect& camera, SDL_Renderer* screen, float scale)
+void EntityLayer::render(SDL_FRect& camera, SDL_Renderer* screen, Uint32 time, float scale)
 {
 	Entity* p = head;
 	while (p != NULL)
 	{
 		if (p->getType() != 0)
 		{
-			p->render(camera, screen, entTexture[p->getType() - 1], greenHp, redHp, scale);
+			p->render(camera, screen, entTexture[p->getType() - 1], greenHp, redHp, time, scale);
 		}
 		p = p->next;
 	}
@@ -157,4 +157,27 @@ bool EntityLayer::loadHpTexture(std::string path1, std::string path2, SDL_Render
 	if (greenHp.loadFromFile(path1, screen) == false) success = false;
 	if (redHp.loadFromFile(path2, screen) == false) success = false;
 	return success;
+}
+
+Entity* EntityLayer::getHead()
+{
+	return head;
+}
+
+void EntityLayer::delEnt(Entity* deadEnt)
+{
+	Entity* currentEnt = head;
+	if (deadEnt == head)
+	{
+		head = head->next;
+		return;
+	}
+	while (currentEnt->next != NULL)
+	{
+		if (currentEnt->next == deadEnt)
+		{
+			currentEnt->next = currentEnt->next->next;
+			break;
+		}
+	}
 }

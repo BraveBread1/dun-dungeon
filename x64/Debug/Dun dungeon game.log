@@ -1,6 +1,32 @@
-﻿  Entity.cpp
-C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(14,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(15,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+﻿  CommonFunc.cpp
+  Entity.cpp
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(21,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(22,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(119,16): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(180,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(181,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  EntityLayer.cpp
+  FogOfWar.cpp
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\FogOfWar.cpp(173,21): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\FogOfWar.cpp(173,36): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+  Game.cpp
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Game.cpp(133,31): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Game.cpp(176,97): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Game.cpp(176,54): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  LTexture.cpp
+  LTimer.cpp
+  Map.cpp
+  Object.cpp
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Object.cpp(9,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Object.cpp(10,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  ObjectLayer.cpp
+  Player.cpp
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Player.cpp(75,16): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+  Tile.cpp
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Tile.cpp(5,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Tile.cpp(6,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  main.cpp
+  Generating Code...
   Dun dungeon game.vcxproj -> C:\Users\admin\projects\Dun dungeon game vs\x64\Debug\Dun dungeon game.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.

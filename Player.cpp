@@ -4,6 +4,10 @@ Player::Player(int i, int j)
 {
 	mPosI = i;
 	mPosJ = j;
+
+	this->maxHP = 100;
+	this->currentHp = this->maxHP;
+	this->dame = 10;
 }
 
 Player::~Player()
@@ -22,14 +26,23 @@ void Player::handleEvent(SDL_Event& e, Tile**** tiles)
 {
 	int i = mPosI;
 	int j = mPosJ;
+
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 	{
 		switch (e.key.keysym.sym)
 		{
 		case SDLK_UP: i -= 1; break;
 		case SDLK_DOWN: i += 1; break;
-		case SDLK_LEFT: j -= 1; break;
-		case SDLK_RIGHT: j += 1; break;
+		case SDLK_LEFT: 
+		{
+			facing = LEFT;
+			j -= 1; break;
+		}
+		case SDLK_RIGHT: 
+		{
+			facing = RIGHT;
+			j += 1; break;
+		}
 		}
 	}
 
@@ -45,12 +58,22 @@ void Player::handleEvent(SDL_Event& e, Tile**** tiles)
 
 void Player::render(SDL_Renderer* screen, SDL_FRect& camera, float scale)
 {
+	if (facing == RIGHT)
+	{
+		setClip(0, 15, 12, 15);
+	}
+	else if (facing == LEFT)
+	{
+		setClip(12, 15, 12, 15);
+	}
 	player.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 6, screen, &clip, scale);
 	renderHp(screen, camera, scale);
 }
 
 void Player::renderHp(SDL_Renderer* screen, SDL_FRect& camera, float scale)
 {
+	int hpPercent = (1.0 * currentHp / maxHP) * 16;
+	setGreenHpClip(0, 0, hpPercent, 2);
 	redHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &redHpClip, scale);
 	greenHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &greenHpClip, scale);
 }
@@ -163,4 +186,24 @@ bool Player::loadHpTexture(std::string path1, std::string path2, SDL_Renderer* s
 	if (redHp.loadFromFile(path2, screen) == false) success = false;
 	setRedHpClip(0, 0, 16, 2);
 	return success;
+}
+
+void Player::attacked(Entity* monster)
+{
+	std::cout << "player was attacked!";
+	currentHp -= monster->getDame();
+	if (currentHp <= 0) currentHp = 0;
+}
+
+void Player::setFacing(int direct)
+{
+	switch (direct)
+	{
+	case 0:
+		facing = LEFT;
+		break;
+	case 1:
+		facing = RIGHT;
+		break;
+	}
 }
