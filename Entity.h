@@ -4,7 +4,6 @@
 
 #include"CommonFunc.h"
 #include"LTexture.h"
-//#include"Player.h"
 
 class Entity
 {
@@ -29,8 +28,8 @@ public:
 	void setGreenHpClip(int x, int y, int w, int h);
 	void setRedHpClip(int x, int y, int w, int h);
 	void renderHp(SDL_Renderer* screen, LTexture& greenHpTexture, LTexture& redHpTexture, SDL_FRect& camera, float scale = 1);
-	void move();
-	bool nextToPlayer(int i, int j);
+	void move(int di, int dj, bool ** hasSolid);
+	bool nextToPlayer(int pi, int pj);
 
 	//void attack(Player* player);
 	void setPath(Dest go);
@@ -39,8 +38,24 @@ public:
 	int getPosI();
 	int getPosJ();
 	int getDame();
+	bool getAlert();
+	int getHunt();
+	void setHunt(int h);
+
+	int getSawI();
+	int getSawJ();
+	void setSaw(int i, int j);
+
+	bool gotLastSaw();
 
 	bool getDead();
+	//void think(int pi, int pj, int** hasSolid);
+	void lookForPlayer(int pi, int pj, bool ** hasSolid);
+	//void moveToPlayer();
+	void setPatrolDest(int j, int i);
+	SDL_Point getPatrolDest();
+
+	bool isBlocked(int j, int i, bool** hasSolid, int pj, int pi, Entity* head);
 
 private:
 	int i, j;
@@ -57,8 +72,14 @@ private:
 
 	int dame;
 	bool dead;
+	bool alert;
+	int hunt;
+
+	int sawI;
+	int sawJ;
 
 	Dest goDest;
+	SDL_Point patrolDest;
 	
 };
 

@@ -52,3 +52,44 @@ int getDistance(int i, int j, int mi, int mj)
 
     return di + dj;
 }
+
+bool hasLOSglobal(int i1, int j1, int i2, int j2, bool** hasSolid)
+{
+    int di, dj, si, sj, err, e2;
+
+    di = abs(i2 - i1);
+    dj = abs(j2 - j1);
+
+    si = (i1 < i2) ? 1 : -1;
+    sj = (j1 < j2) ? 1 : -1;
+    err = dj - di;
+
+    while (1)
+    {
+        e2 = 2 * err;
+
+        if (e2 > -di)
+        {
+            err -= di;
+            j1 += sj;
+        }
+
+        if (e2 < dj)
+        {
+            err += dj;
+            i1 += si;
+        }
+
+        if (j1 == j2 && i1 == i2)
+        {
+            return 1;
+        }
+
+        if (hasSolid[i1][j1])
+        {
+            return 0;
+        }
+
+    }
+    return 0;
+}

@@ -10,6 +10,7 @@
 #include"EntityLayer.h"
 #include"LTimer.h"
 #include"FogOfWar.h"
+#include"Astar.h"
 
 class Game
 {
@@ -27,11 +28,16 @@ public:
 	void handleEvent(SDL_Event e);
 	bool loadText(std::string path, int fontSize);
 	void clearSolidArr();
-	void updateFogOfWar();
+	void updateHasSolid();
 	int hasLOS(int x2, int y2);
 	void doPlayer(SDL_Event& e);
 	void doEntity();
-	Entity::Dest pathFinding(Entity* monster);
+	void entThink(Entity* currentEnt);
+	void pathFinding(Entity* monster, int *di, int *dj, int pi, int pj);
+
+	void moveToPlayer(Entity* currentEnt);
+	void patrol(Entity* currentEnt);
+	void moveToLastSaw(Entity* currentEnt);
 
 
 private:
@@ -50,6 +56,7 @@ private:
 	EntityLayer* mEntLayer;
 	LTimer timer;
 	FogOfWar* fogOfWar;
+	Astar aStar;
 };
 
 #endif

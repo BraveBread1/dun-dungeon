@@ -11,12 +11,13 @@
 #include<fstream>
 #include<vector>
 #include<cmath>
+#include<cstdlib>
 
 const int LEVEL_WIDTH = 512;
 const int LEVEL_HEIGHT = 736;
 
-const int SCREEN_WIDTH = 1500;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 600;
+const int SCREEN_HEIGHT = 800;
 
 const int SCREEN_BPP = 32;
 
@@ -40,7 +41,7 @@ const int LEVEL1_LAYERS = 5;
 
 const int MAX_MONSTER_TYPE = 1;
 
-const int VIS_DISTANCE = 6;
+const int VIS_DISTANCE = 10;
 
 const Uint8 HALF_FOG = 175;
 const Uint8 FULL_FOG = 255;
@@ -48,4 +49,6 @@ const Uint8 NONE_FOG = 0;
 
 bool checkCollision(SDL_FRect a, SDL_FRect b);
 int getDistance(int i, int j, int mi, int mj);
+bool hasLOSglobal(int i1, int j1, int i2, int j2, bool** hasSolid);
+
 #endif

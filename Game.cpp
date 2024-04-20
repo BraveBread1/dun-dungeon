@@ -76,7 +76,7 @@ Player* Game::createPlayer(int startI, int startJ, std::string path)
 		player->setClip(0, 15, PLAYER_WIDTH, PLAYER_HEIGHT);
 	}
 
-	if (player->loadHpTexture("assests/img/green_hp.png", "assests/img/green_hp.png", mRenderer) == false)
+	if (player->loadHpTexture("assests/img/green_hp.png", "assests/img/red_hp.png", mRenderer) == false)
 	{
 		std::cerr << "Failed to load hp texture" << std::endl;
 	}
@@ -137,14 +137,21 @@ void Game::handleEvent(SDL_Event e)
 		}
 
 
-
-		doPlayer(e);
+		if (mPlayer->getTurn())
+		{
+			doPlayer(e);
+		}
+		
 		if (mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->getType() == 18)
 		{
 			win = true;
 		}
-
-		doEntity();
+		if (mPlayer->getTurn() == 0)
+		{
+			doEntity();
+			mPlayer->setTurn(1);
+		}
+		
 
 	}
 }
@@ -199,8 +206,9 @@ void Game::run()
 	Mix_PlayMusic(music, -1);
 	while (isPlaying)
 	{
+		updateHasSolid();
 		handleEvent(*e);
-		/*updateFogOfWar();*/
+		
 		fogOfWar->updateSolid(mMap->getTileSet());
 		fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
 		render();
@@ -301,6 +309,8 @@ bool Game::gameInit()
 
 	music = Mix_LoadMUS("assests/music/core_src_main_assets_music_sewers_1.ogg");
 
+	srand(time(NULL));
+
 	return flag;
 }
 
@@ -327,61 +337,35 @@ bool Game::loadText(std::string path, int fontSize)
 	return success;
 }
 
-//void Game::updateFogOfWar()
-//{
-//	int j, i;
-//	int mi, mj;
-//	for (int l = 0; l < LEVEL1_LAYERS; ++l)
-//	{
-//		for (i = 0; i < LEVEL1_ROWS; i++)
-//		{
-//			for (j = 0; j < LEVEL1_COLS; j++)
-//			{
-//				mMap->tileSet[l][i][j]->setVisible(0);
-//				hasSolid[i][j] = 0;
-//			}
-//		}
-//	}
-//
-//	for (int l = 0; l < LEVEL1_LAYERS; ++l)
-//	{
-//		for (i = 0; i < LEVEL1_ROWS; i++)
-//		{
-//			for (j = 0; j < LEVEL1_COLS; j++)
-//			{
-//				if (mMap->tileSet[l][i][j]->getSolid())
-//				{
-//					hasSolid[i][j] = 1;
-//				}
-//			}
-//		}
-//	}
-//
-//
-//	for (i = -VIS_DISTANCE; i <= VIS_DISTANCE; i++)
-//	{
-//		for (j = -VIS_DISTANCE; j <= VIS_DISTANCE; j++)
-//		{
-//			mi = mPlayer->getPosI() + i;
-//			mj = mPlayer->getPosJ() + j;
-//
-//			if (getDistance(mPlayer->getPosJ(), mPlayer->getPosI(), mj, mi) <= VIS_DISTANCE)
-//			{
-//				if (mi >= 0 && mj >= 0 && mj < LEVEL1_COLS && mi < LEVEL1_ROWS)
-//				{
-//					for (int l = 0; l < LEVEL1_LAYERS; ++l)
-//					{
-//						if (!mMap->tileSet[l][mi][mj]->getVisible() && hasLOS(mi, mj))
-//						{
-//							mMap->tileSet[l][mi][mj]->setRevealed(1);
-//							mMap->tileSet[l][mi][mj]->setVisible(1);
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//}
+void Game::updateHasSolid()
+{
+	int j, i;
+	for (int l = 0; l < LEVEL1_LAYERS; ++l)
+	{
+		for (i = 0; i < LEVEL1_ROWS; i++)
+		{
+			for (j = 0; j < LEVEL1_COLS; j++)
+			{
+				//mMap->tileSet[l][i][j]->setVisible(0);
+				hasSolid[i][j] = 0;
+			}
+		}
+	}
+
+	for (int l = 0; l < LEVEL1_LAYERS; ++l)
+	{
+		for (i = 0; i < LEVEL1_ROWS; i++)
+		{
+			for (j = 0; j < LEVEL1_COLS; j++)
+			{
+				if (mMap->tileSet[l][i][j]->getSolid())
+				{
+					hasSolid[i][j] = 1;
+				}
+			}
+		}
+	}
+}
 
 int Game::hasLOS(int i2, int j2)
 {
@@ -434,16 +418,18 @@ void Game::doPlayer(SDL_Event& e)
 	{
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_UP: i -= 1; break;
-		case SDLK_DOWN: i += 1; break;
+		case SDLK_UP: i -= 1; mPlayer->setTurn(0); break;
+		case SDLK_DOWN: i += 1; mPlayer->setTurn(0); break;
 		case SDLK_LEFT:
 		{
 			mPlayer->setFacing(0);
+			mPlayer->setTurn(0);
 			j -= 1; break;
 		}
 		case SDLK_RIGHT:
 		{
 			mPlayer->setFacing(1);
+			mPlayer->setTurn(0);
 			j += 1; break;
 		}
 		}
@@ -462,6 +448,7 @@ void Game::doPlayer(SDL_Event& e)
 		{
 			mEntLayer->delEnt(target);
 		}
+		
 	}
 
 
@@ -469,7 +456,9 @@ void Game::doPlayer(SDL_Event& e)
 	{
 		mPlayer->setPosI(i);
 		mPlayer->setPosJ(j);
+		
 	}
+	
 }
 
 void Game::doEntity()
@@ -477,72 +466,218 @@ void Game::doEntity()
 	Entity* currentMonster = mEntLayer->getHead();
 	while (currentMonster != NULL)
 	{
-		if (hasLOS(currentMonster->getPosI(), currentMonster->getPosJ()))
-		{
-			if (currentMonster->nextToPlayer(mPlayer->getPosI(), mPlayer->getPosJ()))
-			{
-				mPlayer->attacked(currentMonster);
-			}
-			else
-			{
-				currentMonster->setPath(pathFinding(currentMonster));
-				currentMonster->move();
-			}
-		}
+		//if (hasLOS(currentMonster->getPosI(), currentMonster->getPosJ()))
+		//{
+		//	if (currentMonster->nextToPlayer(mPlayer->getPosI(), mPlayer->getPosJ()))
+		//	{
+		//		mPlayer->attacked(currentMonster);
+		//	}
+		//	else
+		//	{
+		//		currentMonster->setPath(pathFinding(currentMonster));
+		//		currentMonster->movte();
+		//	}
+		//}
+
+		entThink(currentMonster);
 		currentMonster = currentMonster->next;
 	}
 }
 
-Entity::Dest Game::pathFinding(Entity* monster)
+void Game::pathFinding(Entity* monster, int *di, int *dj, int pi, int pj)
 {
-	int playerI = mPlayer->getPosI();
-	int playerJ = mPlayer->getPosJ();
 
 	int monsI = monster->getPosI();
 	int monsJ = monster->getPosJ();
 
-	Entity::Dest go = Entity::Dest::NONE;
+	*di = 0;
+	*dj = 0;
 
-	if (playerI < monsI)
+	if (pi < monsI)
 	{
-		if (playerJ < monsJ)
+		if (monster->isBlocked(monsJ, monsI - 1, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
 		{
-			go = Entity::Dest::LEFT;
+			*di = -1;
 		}
-		else if (playerJ > monsJ)
+		else *di = 0;
+		if (pj < monsJ)
 		{
-			go = Entity::Dest::RIGHT;
+			if (monster->isBlocked(monsJ - 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
+			{
+				*dj = -1;
+			}
+			else *dj = 0;
+		}
+		else if (pj > monsJ)
+		{
+			if (monster->isBlocked(monsJ + 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
+			{
+				*dj = 1;
+			}
+			else
+			{
+				*dj = 0;
+			}
 		}
 		else
 		{
-			go = Entity::Dest::UP;
+			*dj = 0;
 		}
 	}
-	else if (playerI > monsI)
+	else if (pi > monsI)
 	{
-		if (playerJ < monsJ)
+		if (monster->isBlocked(monsJ, monsI + 1, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
 		{
-			go = Entity::Dest::LEFT;
+			*di = 1;
 		}
-		else if (playerJ > monsJ)
+		else *di = 0;
+		if (pj < monsJ)
 		{
-			go = Entity::Dest::RIGHT;
+			if (monster->isBlocked(monsJ - 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
+			{
+				*dj = -1;
+			}
+			else *dj = 0;
+		}
+		else if (pj > monsJ)
+		{
+			if (monster->isBlocked(monsJ + 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
+			{
+				*dj = 1;
+			}
+			else
+			{
+				*dj = 0;
+			}
 		}
 		else
 		{
-			go = Entity::Dest::DOWN;
+			*dj = 0;
 		}
 	}
 	else
 	{
-		if (playerJ < monsJ)
+		*di = 0;
+		if (pj < monsJ)
 		{
-			go = Entity::Dest::LEFT;
+			if (monster->isBlocked(monsJ - 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
+			{
+				*dj = -1;
+			}
+			else *dj = 0;
+		}
+		else if (pj > monsJ)
+		{
+			if (monster->isBlocked(monsJ + 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
+			{
+				*dj = 1;
+			}
+			else
+			{
+				*dj = 0;
+			}
 		}
 		else
 		{
-			go = Entity::Dest::RIGHT;
+			*dj = 0;
 		}
 	}
-	return go;
+}
+
+//void Game::entThink(Entity* currentEnt)
+//{
+//	if (currentEnt->getAlert() == false)
+//	{
+//		currentEnt->lookForPlayer(mPlayer->getPosI(), mPlayer->getPosJ(), hasSolid);
+//		//if (currentEnt->getAlert() == true)
+//		//{
+//		//	moveToPlayer(currentEnt);
+//		//}
+//	}
+//	else if (hasLOS(currentEnt->getPosI(), currentEnt->getPosJ()))
+//	{
+//		moveToPlayer(currentEnt);
+//	}
+//	else
+//	{
+//		patrol(currentEnt);
+//	}
+//}
+
+void Game::entThink(Entity* currentEnt)
+{
+	if (currentEnt->getAlert() == 0)
+	{
+		currentEnt->lookForPlayer(mPlayer->getPosI(), mPlayer->getPosJ(), hasSolid);
+		if (currentEnt->getAlert() != 0)
+		{
+			moveToPlayer(currentEnt);
+			currentEnt->setSaw(mPlayer->getPosI(), mPlayer->getPosJ());
+		}
+	}
+	else if (hasLOS(currentEnt->getPosI(), currentEnt->getPosJ()))
+	{
+		currentEnt->setHunt(3);
+		moveToPlayer(currentEnt);
+		currentEnt->setSaw(mPlayer->getPosI(), mPlayer->getPosJ());
+	}
+	else
+	{
+		if (currentEnt->getHunt() != 0)
+		{
+			if (currentEnt->gotLastSaw() == false && currentEnt->getSawI() != -1 && currentEnt->getSawJ() != -1)
+			{
+				moveToLastSaw(currentEnt);
+				currentEnt->setHunt(currentEnt->getHunt() - 1);
+				if (currentEnt->getHunt() == 0)
+				{
+					currentEnt->setSaw(-1, -1);
+				}
+			}
+			else
+			{
+				patrol(currentEnt);
+			}
+		}
+		else
+		{
+			patrol(currentEnt);
+		}
+	}
+}
+
+void Game::moveToPlayer(Entity* currentEnt)
+{
+	int di, dj;
+	if (currentEnt->nextToPlayer(mPlayer->getPosI(), mPlayer->getPosJ()))
+	{
+		mPlayer->attacked(currentEnt->getDame());
+	}
+	else
+	{
+		pathFinding(currentEnt, &di, &dj, mPlayer->getPosI(), mPlayer->getPosJ());
+		currentEnt->move(di, dj, hasSolid);
+	}
+
+	currentEnt->setPatrolDest(mPlayer->getPosJ(), mPlayer->getPosI());
+}
+
+void Game::moveToLastSaw(Entity* currentEnt)
+{
+	int di, dj;
+	pathFinding(currentEnt, &di, &dj, currentEnt->getSawI(), currentEnt->getSawJ());
+	currentEnt->move(di, dj, hasSolid);
+
+	/*currentEnt->setPatrolDest(mPlayer->getPosJ(), mPlayer->getPosI());*/
+}
+
+void Game::patrol(Entity* currentEnt)
+{
+	std::cout << "patrol" << std::endl;
+	int di = rand() % 3 - 1;
+	int dj = rand() % 3 - 1;
+	if (currentEnt->isBlocked(dj + currentEnt->getPosJ(), di + currentEnt->getPosI(), hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
+	{
+		currentEnt->move(di, dj, hasSolid);
+	}
 }

@@ -11,7 +11,12 @@ Entity::Entity(int i, int j, int type)
 		this->maxHP = 100;
 		this->currentHp = this->maxHP;
 		this->dame = 10;
+		this->alert = false;
+		hunt = 0;
 	//}
+
+		sawI = -1;
+		sawJ = -1;
 
 	entClip.x = 0;
 	entClip.y = 0;
@@ -49,7 +54,7 @@ void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTextur
 	if (checkCollision(camera, mBox))
 	{
 		setBox();
-		/*setEntClip((time / 100) % 11 * 16, 0);*/
+		setEntClip((time / 100) % 11 * 16, 0);
 		entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale);
 		renderHp(screen, greenHpTexture, redHpTexture, camera, scale);
 	}
@@ -117,16 +122,21 @@ void Entity::setRedHpClip(int x, int y, int w, int h)
 void Entity::renderHp(SDL_Renderer* screen, LTexture& greenHpTexture, LTexture& redHpTexture, SDL_FRect& camera, float scale)
 {
 	int hpPercent = (1.0 * currentHp / maxHP) * 16;
+
 	setGreenHpClip(0, 0, hpPercent, 2);
 	redHpTexture.render(j * TILE_SIZE - camera.x, i * TILE_SIZE - camera.y - 8, screen, &redHpClip, scale);
 	greenHpTexture.render(j * TILE_SIZE - camera.x, i * TILE_SIZE - camera.y - 8, screen, &greenHpClip, scale);
 }
 
-bool Entity::nextToPlayer(int i, int j)
+bool Entity::nextToPlayer(int pi, int pj)
 {
-	if (this->i == i - 1 || this->i == i + 1)
+	if (i == pi && j == pj) {
+		std::cout << "the dao nao lai bang duoc" << std::endl;
+		return false;
+	}
+	if (i == pi - 1 || i == pi || i == pi + 1)
 	{
-		if (this->j == j + 1 || this->j == j - 1)
+		if (j == pj - 1 || j == pj || j == pj + 1)
 		{
 			return true;
 		}
@@ -135,29 +145,29 @@ bool Entity::nextToPlayer(int i, int j)
 			return false;
 		}
 	}
-	else return false;
+	else
+	{
+		return false;
+	}
 }
 
-void Entity::move()
+void Entity::move(int di, int dj, bool ** hasSolid)
 {
-	if (goDest == NONE) return;
-	switch(goDest)
+	std::cout << di << " " << dj << std::endl;
+	std::cout << "ent moved" << std::endl;
+	int ci, cj;
+	ci = this->i + di;
+	cj = this->j + dj;
+	if (dj < 0)
 	{
-		case NONE:
-			break;
-		case LEFT:
-			this->j -= 1;
-			break;
-		case RIGHT:
-			this->j += 1;
-			break;
-		case UP:
-			this->i -= 1;
-			break;
-		case DOWN:
-			this->i += 1;
-			break;
+		goDest = LEFT;
 	}
+	else if (dj > 0)
+	{
+		goDest = RIGHT;
+	}
+	this->i = ci;
+	this->j = cj;
 }
 
 //void Entity::attack(Player* player)
@@ -186,4 +196,111 @@ void Entity::setBox()
 bool Entity::getDead()
 {
 	return this->dead;
+}
+
+bool Entity::getAlert()
+{
+	return alert;
+}
+
+//void Entity::think(int pi, int pj, int** hasSolid)
+//{
+//	if (alert != true)
+//	{
+//		lookForPlayer(pi, pj, hasSolid);
+//	}
+//	else if (hasLOSglobal(pi, pj, i, j, hasSolid))
+//	{
+//		moveToPlayer();
+//	}
+//}
+
+void Entity::lookForPlayer(int pi, int pj, bool** hasSolid)
+{
+	if (getDistance(pi, pj, i, j) <= VIS_DISTANCE && hasLOSglobal(pi, pj, i, j, hasSolid))
+	{
+		alert = true;
+		hunt = 3;
+	}
+}
+
+//void Entity::moveToPlayer(Entity* e)
+//{
+//	int dx, dy;
+//
+//	createAStarRoute(e, dungeon.player->x, dungeon.player->y, &dx, &dy);
+//
+//	moveEntity(e, dx, dy);
+//
+//	m->patrolDest.x = dungeon.player->x;
+//
+//	m->patrolDest.y = dungeon.player->y;
+//}
+
+void Entity::setPatrolDest(int j, int i)
+{
+	patrolDest.x = j;
+	patrolDest.y = i;
+}
+
+SDL_Point Entity::getPatrolDest()
+{
+	return patrolDest;
+}
+
+bool Entity::isBlocked(int j, int i, bool** hasSolid, int pj, int pi, Entity* head)
+{
+	Entity* e;
+
+	if (i == this->i && j == this->j) return 0;
+
+	if (hasSolid[i][j] == 1 || (j == pj && i == pi))
+	{
+		return 1;
+	}
+
+	for (Entity* e = head; e != NULL; e = e->next)
+	{
+		if (e->getPosI() == i && e->getPosJ() == j)
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+int Entity::getHunt()
+{
+	return hunt;
+}
+void Entity::setHunt(int h)
+{
+	hunt = h;
+}
+
+int Entity::getSawI()
+{
+	return sawI;
+}
+int Entity::getSawJ()
+{
+	return sawJ;
+}
+void Entity::setSaw(int i, int j)
+{
+	sawI = i;
+	sawJ = j;
+}
+
+bool Entity::gotLastSaw()
+{
+	if (this->i == sawI && this->j == sawJ)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

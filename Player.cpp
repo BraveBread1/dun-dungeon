@@ -6,8 +6,9 @@ Player::Player(int i, int j)
 	mPosJ = j;
 
 	this->maxHP = 100;
-	this->currentHp = this->maxHP;
+	this->currentHp = 100;
 	this->dame = 10;
+	turn = 1;
 }
 
 Player::~Player()
@@ -73,6 +74,11 @@ void Player::render(SDL_Renderer* screen, SDL_FRect& camera, float scale)
 void Player::renderHp(SDL_Renderer* screen, SDL_FRect& camera, float scale)
 {
 	int hpPercent = (1.0 * currentHp / maxHP) * 16;
+	/*std::cout << "hp percnt" << hpPercent << std::endl;*/
+	//if (hpPercent < 16)
+	//{
+	//	std::cout << "hp percent" << hpPercent << std::endl;
+	//}
 	setGreenHpClip(0, 0, hpPercent, 2);
 	redHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &redHpClip, scale);
 	greenHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &greenHpClip, scale);
@@ -188,10 +194,11 @@ bool Player::loadHpTexture(std::string path1, std::string path2, SDL_Renderer* s
 	return success;
 }
 
-void Player::attacked(Entity* monster)
+void Player::attacked(int dame)
 {
-	std::cout << "player was attacked!";
-	currentHp -= monster->getDame();
+	std::cout << "player was attacked!" << std::endl;
+	this->currentHp -= dame;
+	std::cout << "mau con" << currentHp << std::endl;
 	if (currentHp <= 0) currentHp = 0;
 }
 
@@ -206,4 +213,14 @@ void Player::setFacing(int direct)
 		facing = RIGHT;
 		break;
 	}
+}
+
+void Player::setTurn(int t)
+{
+	turn = t;
+}
+
+int Player::getTurn()
+{
+	return turn;
 }

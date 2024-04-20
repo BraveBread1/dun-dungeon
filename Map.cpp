@@ -77,7 +77,11 @@ bool Map::setTiles(std::string* path)
 						std::cerr << "Error loading map: Unexpected end of file!\n";
 						success = false;
 					}
-					if (tileType >= 49 && tileType <= 192)
+					if ((tileType >= 49 && tileType <= 144))
+					{
+						tileSet[l][i][j] = new Tile(j * TILE_SIZE, i * TILE_SIZE, tileType, 1);
+					}
+					else if (tileType == 0 && l == 0)
 					{
 						tileSet[l][i][j] = new Tile(j * TILE_SIZE, i * TILE_SIZE, tileType, 1);
 					}

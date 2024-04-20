@@ -32,9 +32,11 @@ public:
 
 	bool loadPlayerTexture(std::string path, SDL_Renderer* screen);
 	bool loadHpTexture(std::string path1, std::string path2, SDL_Renderer* screen);
-	void attacked(Entity* monster);
+	void attacked(int dame);
 	void setFacing(int direct);
 
+	void setTurn(int t);
+	int getTurn();
 	enum Facing
 	{
 		LEFT,
@@ -61,6 +63,7 @@ private:
 	int turn;
 
 	Facing facing;
+
 	
 };
 

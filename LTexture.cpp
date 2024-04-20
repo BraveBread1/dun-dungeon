@@ -96,10 +96,8 @@ int LTexture::getHeight()
 
 bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor, TTF_Font* font, SDL_Renderer* screen)
 {
-	//Get rid of preexisting texture
 	free();
 
-	//Render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
 	if (textSurface == NULL)
 	{
@@ -107,7 +105,6 @@ bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor
 	}
 	else
 	{
-		//Create texture from surface pixels
 		mTexture = SDL_CreateTextureFromSurface(screen, textSurface);
 		if (mTexture == NULL)
 		{
@@ -115,15 +112,12 @@ bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor
 		}
 		else
 		{
-			//Get image dimensions
 			mWidth = textSurface->w;
 			mHeight = textSurface->h;
 		}
 
-		//Get rid of old surface
 		SDL_FreeSurface(textSurface);
 	}
 
-	//Return success
 	return mTexture != NULL;
 }
