@@ -448,7 +448,7 @@ void Game::doPlayer(SDL_Event& e)
 		{
 			mEntLayer->delEnt(target);
 		}
-		
+
 	}
 
 
@@ -456,9 +456,9 @@ void Game::doPlayer(SDL_Event& e)
 	{
 		mPlayer->setPosI(i);
 		mPlayer->setPosJ(j);
-		
+
 	}
-	
+
 }
 
 void Game::doEntity()
@@ -484,7 +484,7 @@ void Game::doEntity()
 	}
 }
 
-void Game::pathFinding(Entity* monster, int *di, int *dj, int pi, int pj)
+void Game::pathFinding(Entity* monster, int* di, int* dj, int pi, int pj)
 {
 
 	int monsI = monster->getPosI();
@@ -493,95 +493,156 @@ void Game::pathFinding(Entity* monster, int *di, int *dj, int pi, int pj)
 	*di = 0;
 	*dj = 0;
 
-	if (pi < monsI)
+	if (pi < monsI && pj < monsJ)
 	{
-		if (monster->isBlocked(monsJ, monsI - 1, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
+		if (monster->isBlocked(monsJ - 1, monsI - 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
 		{
 			*di = -1;
+			*dj = -1;
 		}
-		else *di = 0;
-		if (pj < monsJ)
+		else if (monster->isBlocked(monsJ - 1, monsI, hasSolid, pj, pi, mEntLayer->getHead()) == false)
 		{
-			if (monster->isBlocked(monsJ - 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
-			{
-				*dj = -1;
-			}
-			else *dj = 0;
+			*di = 0;
+			*dj = -1;
 		}
-		else if (pj > monsJ)
+		else if (monster->isBlocked(monsJ, monsI - 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
 		{
-			if (monster->isBlocked(monsJ + 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
-			{
-				*dj = 1;
-			}
-			else
-			{
-				*dj = 0;
-			}
+			*di = -1;
+			*dj = 0;
 		}
 		else
 		{
+			*di = 0;
 			*dj = 0;
 		}
 	}
-	else if (pi > monsI)
+	else if (pi == monsI && pj < monsJ)
 	{
-		if (monster->isBlocked(monsJ, monsI + 1, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
+		if (monster->isBlocked(monsJ - 1, monsI, hasSolid, pj, pi, mEntLayer->getHead()) == false)
 		{
-			*di = 1;
-		}
-		else *di = 0;
-		if (pj < monsJ)
-		{
-			if (monster->isBlocked(monsJ - 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
-			{
-				*dj = -1;
-			}
-			else *dj = 0;
-		}
-		else if (pj > monsJ)
-		{
-			if (monster->isBlocked(monsJ + 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
-			{
-				*dj = 1;
-			}
-			else
-			{
-				*dj = 0;
-			}
+			*di = 0;
+			*dj = -1;
 		}
 		else
 		{
+			*di = 0;
+			*dj = 0;
+		}
+	}
+	else if (pi > monsI && pj < monsJ)
+	{
+		if (monster->isBlocked(monsJ - 1, monsI + 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 1;
+			*dj = -1;
+		}
+		else if (monster->isBlocked(monsJ - 1, monsI, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 0;
+			*dj = -1;
+		}
+		else if (monster->isBlocked(monsJ, monsI + 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 1;
+			*dj = 0;
+		}
+		else
+		{
+			*di = 0;
+			*dj = 0;
+		}
+	}
+	else if (pi > monsI && pj == monsJ)
+	{
+		if (monster->isBlocked(monsJ, monsI + 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 1;
+			*dj = 0;
+		}
+		else
+		{
+			*di = 0;
+			*dj = 0;
+		}
+	}
+	else if (pi > monsI && pj > monsJ)
+	{
+		if (monster->isBlocked(monsJ + 1, monsI + 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 1;
+			*dj = 1;
+		}
+		else if (monster->isBlocked(monsJ, monsI + 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 1;
+			*dj = 0;
+		}
+		else if (monster->isBlocked(monsJ + 1, monsI, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 0;
+			*dj = 1;
+		}
+		else
+		{
+			*di = 0;
+			*dj = 0;
+		}
+	}
+	else if (pi == monsI && pj > monsJ)
+	{
+		if (monster->isBlocked(monsJ + 1, monsI, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 0;
+			*dj = 1;
+		}
+		else
+		{
+			*di = 0;
+			*dj = 0;
+		}
+	}
+	else if (pi < monsI && pj > monsJ)
+	{
+		if (monster->isBlocked(monsJ + 1, monsI - 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = -1;
+			*dj = 1;
+		}
+		else if (monster->isBlocked(monsJ, monsI - 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = -1;
+			*dj = 0;
+		}
+		else if (monster->isBlocked(monsJ + 1, monsI, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 0;
+			*dj = 1;
+		}
+		else
+		{
+			*di = 0;
+			*dj = 0;
+		}
+	}
+	else if (pi < monsI && pj == monsJ)
+	{
+		if (monster->isBlocked(monsJ - 1, monsI, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		{
+			*di = 0;
+			*dj = -1;
+		}
+		else
+		{
+			*di = 0;
 			*dj = 0;
 		}
 	}
 	else
 	{
 		*di = 0;
-		if (pj < monsJ)
-		{
-			if (monster->isBlocked(monsJ - 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
-			{
-				*dj = -1;
-			}
-			else *dj = 0;
-		}
-		else if (pj > monsJ)
-		{
-			if (monster->isBlocked(monsJ + 1, monsI, hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
-			{
-				*dj = 1;
-			}
-			else
-			{
-				*dj = 0;
-			}
-		}
-		else
-		{
-			*dj = 0;
-		}
+		*dj = 0;
 	}
+
 }
 
 //void Game::entThink(Entity* currentEnt)
