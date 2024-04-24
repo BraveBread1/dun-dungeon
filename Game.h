@@ -11,6 +11,12 @@
 #include"LTimer.h"
 #include"FogOfWar.h"
 #include"Astar.h"
+#include"Menu.h"
+
+enum GameState
+{
+	MENU, PLAYING, DYING
+};
 
 class Game
 {
@@ -23,6 +29,7 @@ public:
 	Player* createPlayer(int startI, int startJ, std::string path);
 	Map* createMap();
 	ObjectLayer* creatObjectLayer();
+	Menu* createMenu();
 	void run();
 	void render();
 	void handleEvent(SDL_Event e);
@@ -32,12 +39,17 @@ public:
 	int hasLOS(int x2, int y2);
 	void doPlayer(SDL_Event& e);
 	void doEntity();
+	void handleObjectEvent();
 	void entThink(Entity* currentEnt);
 	void pathFinding(Entity* monster, int *di, int *dj, int pi, int pj);
 
 	void moveToPlayer(Entity* currentEnt);
 	void patrol(Entity* currentEnt);
 	void moveToLastSaw(Entity* currentEnt);
+
+	void renderMenu();
+	void handleMenuEvent(SDL_Event e);
+
 
 
 private:
@@ -56,7 +68,9 @@ private:
 	EntityLayer* mEntLayer;
 	LTimer timer;
 	FogOfWar* fogOfWar;
-	Astar aStar;
+
+	int mGameSate;
+	Menu* mMenu;
 };
 
 #endif

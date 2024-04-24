@@ -14,13 +14,16 @@ Game::Game()
 	mEntLayer = NULL;
 
 	fogOfWar = NULL;
+	mMenu = NULL;
 
-	scale = 1;
+	scale = 2;
 	hasSolid = new bool* [LEVEL1_ROWS];
 	for (int i = 0; i < LEVEL1_ROWS; ++i)
 	{
 		hasSolid[i] = new bool[LEVEL1_COLS];
 	}
+
+	mGameSate = MENU;
 }
 
 Game::~Game()
@@ -133,26 +136,43 @@ void Game::handleEvent(SDL_Event e)
 				scale += e.wheel.preciseY * 0.1;
 			}
 			if (scale < 1) scale = 1;
-			/*else if (scale >= 2.5) scale = 2.5;*/
+			else if (scale >= 3.5) scale = 3.5;
 		}
 
 
 		if (mPlayer->getTurn())
 		{
 			doPlayer(e);
+			handleObjectEvent();
 		}
-		
-		if (mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->getType() == 18)
-		{
-			win = true;
-		}
+	
 		if (mPlayer->getTurn() == 0)
 		{
 			doEntity();
 			mPlayer->setTurn(1);
 		}
-		
+	}
+}
 
+void Game::handleObjectEvent()
+{
+	if (mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->getType() == 18)
+	{
+		win = true;
+	}
+	else if (mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->getType() == 70)
+	{
+		mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->setType(3);
+	}
+	else if (mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->getType() == 216)
+	{
+		mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->setType(0);
+		mObjectLayer->getObjSet()[mPlayer->getPosI() - 1][mPlayer->getPosJ()]->setType(0);
+	}
+	else if (mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->getType() == 113)
+	{
+		mObjectLayer->getObjSet()[mPlayer->getPosI()][mPlayer->getPosJ()]->setType(114);
+		mObjectLayer->getObjSet()[mPlayer->getPosI() - 1][mPlayer->getPosJ()]->setType(226);
 	}
 }
 
@@ -176,14 +196,15 @@ void Game::render()
 				
 			}
 		}
-		
+		fogOfWar->render(camera, mRenderer, scale);
+		mPlayer->renderStatus(mRenderer);
 	}
 	else
 	{
 		winText.render((SCREEN_WIDTH - winText.getWidth()) / 2, (SCREEN_HEIGHT - winText.getHeight()) / 2, mRenderer);
 	}
 
-	fogOfWar->render(camera, mRenderer, scale);
+
 
 	SDL_RenderPresent(mRenderer);
 }
@@ -206,12 +227,21 @@ void Game::run()
 	Mix_PlayMusic(music, -1);
 	while (isPlaying)
 	{
-		updateHasSolid();
-		handleEvent(*e);
-		
-		fogOfWar->updateSolid(mMap->getTileSet());
-		fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
-		render();
+		if (mGameSate == MENU)
+		{
+			handleMenuEvent(*e);
+			renderMenu();
+
+		}
+		else
+		{
+			updateHasSolid();
+			handleEvent(*e);
+			fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
+			fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
+			render();
+		}
+
 	}
 }
 
@@ -263,6 +293,9 @@ bool Game::gameInit()
 			flag = false;
 		}
 	}
+
+	mMenu = createMenu();
+
 	mPlayer = createPlayer(6, 3, "assests/sprite/warrior.png");
 	camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
@@ -362,6 +395,16 @@ void Game::updateHasSolid()
 				{
 					hasSolid[i][j] = 1;
 				}
+			}
+		}
+	}
+	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	{
+		for (int j = 0; j < LEVEL1_COLS; ++j)
+		{
+			if (mObjectLayer->getObjSet()[i][j]->getType() == 216 || mObjectLayer->getObjSet()[i][j]->getType() == 113)
+			{
+				hasSolid[i][j] = 1;
 			}
 		}
 	}
@@ -626,10 +669,10 @@ void Game::pathFinding(Entity* monster, int* di, int* dj, int pi, int pj)
 	}
 	else if (pi < monsI && pj == monsJ)
 	{
-		if (monster->isBlocked(monsJ - 1, monsI, hasSolid, pj, pi, mEntLayer->getHead()) == false)
+		if (monster->isBlocked(monsJ, monsI - 1, hasSolid, pj, pi, mEntLayer->getHead()) == false)
 		{
-			*di = 0;
-			*dj = -1;
+			*di = -1;
+			*dj = 0;
 		}
 		else
 		{
@@ -713,6 +756,7 @@ void Game::moveToPlayer(Entity* currentEnt)
 	if (currentEnt->nextToPlayer(mPlayer->getPosI(), mPlayer->getPosJ()))
 	{
 		mPlayer->attacked(currentEnt->getDame());
+		currentEnt->setStatus(Entity::Status::ATTACK);
 	}
 	else
 	{
@@ -734,11 +778,47 @@ void Game::moveToLastSaw(Entity* currentEnt)
 
 void Game::patrol(Entity* currentEnt)
 {
-	std::cout << "patrol" << std::endl;
 	int di = rand() % 3 - 1;
 	int dj = rand() % 3 - 1;
 	if (currentEnt->isBlocked(dj + currentEnt->getPosJ(), di + currentEnt->getPosI(), hasSolid, mPlayer->getPosJ(), mPlayer->getPosI(), mEntLayer->getHead()) == false)
 	{
 		currentEnt->move(di, dj, hasSolid);
+	}
+}
+
+Menu* Game::createMenu()
+{
+	Menu* menu = new Menu;
+	if (menu->loadMenuTexture("assests/img/background.png", mRenderer) == false)
+	{
+		std::cerr << "unable to load menu's background" << std::endl;
+	}
+	return menu;
+}
+
+void Game::renderMenu()
+{
+	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, RENDER_DRAW_COLOR);
+	SDL_RenderClear(mRenderer);
+	mMenu->render(mRenderer);
+	SDL_RenderPresent(mRenderer);
+}
+
+void Game::handleMenuEvent(SDL_Event e)
+{
+	while (SDL_PollEvent(&e))
+	{
+		if (e.type == SDL_QUIT)
+		{
+			isPlaying = false;
+		}
+		else
+		{
+			mMenu->handleEvent(e, mGameSate);
+			if (mMenu->enter->getPressed() == 2)
+			{
+				mGameSate = PLAYING;
+			}
+		}
 	}
 }

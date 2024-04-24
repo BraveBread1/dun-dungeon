@@ -4,6 +4,8 @@
 #include"CommonFunc.h"
 #include"LTexture.h"
 #include"Tile.h"
+#include"ObjectLayer.h"
+#include"Object.h"
 
 class FogOfWar
 {
@@ -20,7 +22,7 @@ public:
 
 	void update(int mi, int mj);
 
-	void updateSolid(Tile**** tileSet);
+	void updateSolid(Tile**** tileSet, Object*** objSet);
 	void setPartClip(int x, int y, int w, int h);
 
 private:

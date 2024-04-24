@@ -13,6 +13,11 @@ public:
 		NONE, UP, DOWN, LEFT, RIGHT
 	};
 
+	enum Status
+	{
+		NO_ATTACK, ATTACK
+	};
+
 	Entity(int i, int j, int type);
 	~Entity();
 
@@ -57,6 +62,8 @@ public:
 
 	bool isBlocked(int j, int i, bool** hasSolid, int pj, int pi, Entity* head);
 
+	void setStatus(Status status);
+
 private:
 	int i, j;
 	SDL_FRect mBox;
@@ -70,7 +77,9 @@ private:
 	int maxHP;
 	int currentHp;
 
-	int dame;
+	int minDame;
+	int maxDame;
+
 	bool dead;
 	bool alert;
 	int hunt;
@@ -80,6 +89,9 @@ private:
 
 	Dest goDest;
 	SDL_Point patrolDest;
+
+	Status monsStatus;
+	
 	
 };
 

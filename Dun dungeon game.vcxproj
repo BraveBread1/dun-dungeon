@@ -137,6 +137,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Astar.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="CommonFunc.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityLayer.cpp" />
@@ -146,6 +147,7 @@
     <ClCompile Include="LTimer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectLayer.cpp" />
@@ -154,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Astar.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="CommonFunc.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityLayer.h" />
@@ -162,6 +165,7 @@
     <ClInclude Include="LTexture.h" />
     <ClInclude Include="LTimer.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectLayer.h" />

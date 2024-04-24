@@ -5,10 +5,15 @@ Player::Player(int i, int j)
 	mPosI = i;
 	mPosJ = j;
 
-	this->maxHP = 100;
-	this->currentHp = 100;
-	this->dame = 10;
+	this->maxHP = 20;
+	this->currentHp = 20;
+	this->minDame = 1;
+	this->maxDame = 10;
 	turn = 1;
+
+	exp = 3;
+	maxExp = 10;
+
 }
 
 Player::~Player()
@@ -74,11 +79,7 @@ void Player::render(SDL_Renderer* screen, SDL_FRect& camera, float scale)
 void Player::renderHp(SDL_Renderer* screen, SDL_FRect& camera, float scale)
 {
 	int hpPercent = (1.0 * currentHp / maxHP) * 16;
-	/*std::cout << "hp percnt" << hpPercent << std::endl;*/
-	//if (hpPercent < 16)
-	//{
-	//	std::cout << "hp percent" << hpPercent << std::endl;
-	//}
+
 	setGreenHpClip(0, 0, hpPercent, 2);
 	redHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &redHpClip, scale);
 	greenHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &greenHpClip, scale);
@@ -109,41 +110,29 @@ int Player::getPosJ()
 
 void Player::setCamera(SDL_FRect& camera, float scale)
 {
-	// Tính toán vị trí trung tâm của nhân vật dựa trên tỷ lệ zoom
-	float playerCenterX = (mPosJ * TILE_SIZE + PLAYER_WIDTH / 2) * scale;
-	float playerCenterY = (mPosI * TILE_SIZE + PLAYER_HEIGHT / 2) * scale;
+	float pCenterX = (mPosJ * TILE_SIZE + TILE_SIZE / 2) * scale;
+	float pCenterY = (mPosI * TILE_SIZE + TILE_SIZE / 2) * scale;
 
-	// Điều chỉnh camera để nhân vật ở giữa màn hình, tính theo tỷ lệ zoom
-	camera.x = playerCenterX - SCREEN_WIDTH / 2.0f;
-	camera.y = playerCenterY - SCREEN_HEIGHT / 2.0f;
+	camera.x = (pCenterX - SCREEN_WIDTH / 2) / scale;
+	camera.y = (pCenterY - SCREEN_HEIGHT / 2) / scale;
 
-	// Đảm bảo camera không đi ra ngoài giới hạn của bản đồ
-	camera.x = fmax(0.0f, camera.x);
-	camera.y = fmax(0.0f, camera.y);
-
-	// Tính toán giới hạn tối đa của camera dựa trên kích thước của bản đồ
-	float maxCameraX = LEVEL_WIDTH * scale - SCREEN_WIDTH;
-	float maxCameraY = LEVEL_HEIGHT * scale - SCREEN_HEIGHT;
-
-	// Đảm bảo camera không vượt quá biên của bản đồ
-	camera.x = fmin(camera.x, maxCameraX);
-	camera.y = fmin(camera.y, maxCameraY);
-
-	// Xử lý trường hợp đặc biệt khi kích thước camera lớn hơn kích thước bản đồ
-	if (SCREEN_WIDTH >= LEVEL_WIDTH * scale)
+	if (camera.x < 0) camera.x = 0;
+	if (camera.y < 0) camera.y = 0;
+	if (camera.x + SCREEN_WIDTH > 1.0 * LEVEL_WIDTH * scale) camera.x = LEVEL_WIDTH * scale - SCREEN_WIDTH;
+	if (camera.y + SCREEN_HEIGHT > 1.0 * LEVEL_HEIGHT * scale) camera.y = LEVEL_HEIGHT * scale - SCREEN_HEIGHT;
+	if (SCREEN_WIDTH > LEVEL_WIDTH * scale)
 	{
-		camera.x = (LEVEL_WIDTH * scale - SCREEN_WIDTH) / 2.0f; // Giữ camera ở giữa theo chiều ngang
+		camera.x = (LEVEL_WIDTH * scale) / 2 - SCREEN_WIDTH / 2;
 	}
-
-	if (SCREEN_HEIGHT >= LEVEL_HEIGHT * scale)
+	if (SCREEN_HEIGHT > LEVEL_HEIGHT * scale)
 	{
-		camera.y = (LEVEL_HEIGHT * scale - SCREEN_HEIGHT) / 2.0f; // Giữ camera ở giữa theo chiều dọc
+		camera.x = (LEVEL_HEIGHT * scale) / 2 - SCREEN_HEIGHT / 2;
 	}
 }
 
 bool Player::loadPlayerTexture(std::string path, SDL_Renderer* screen)
 {
-	if (player.loadFromFile(path, screen))
+	if (player.loadFromFile(path, screen) && status.loadImg("assests/img/hero_status.png", screen))
 	{
 		return true;
 	}
@@ -165,6 +154,7 @@ void Player::setPosJ(int j)
 
 void Player::attack(Entity* target)
 {
+	int dame = rand() % maxDame + minDame;
 	target->attacked(dame);
 }
 
@@ -196,9 +186,7 @@ bool Player::loadHpTexture(std::string path1, std::string path2, SDL_Renderer* s
 
 void Player::attacked(int dame)
 {
-	std::cout << "player was attacked!" << std::endl;
 	this->currentHp -= dame;
-	std::cout << "mau con" << currentHp << std::endl;
 	if (currentHp <= 0) currentHp = 0;
 }
 
@@ -223,4 +211,74 @@ void Player::setTurn(int t)
 int Player::getTurn()
 {
 	return turn;
+}
+
+hero_status::hero_status()
+{
+	statusPaneClip.x = 0;
+	statusPaneClip.y = 0;
+	statusPaneClip.w = 159;
+	statusPaneClip.h = 39;
+
+	hpClip.x = 0;
+	hpClip.y = 39;
+	hpClip.w = 128;
+	hpClip.h = 9;
+
+	expClip.x = 0;
+	expClip.y = 57;
+	expClip.w = 128;
+	expClip.h = 7;
+}
+
+hero_status::~hero_status()
+{
+	free();
+}
+
+void hero_status::free()
+{
+	statusPane.free();
+}
+
+bool hero_status::loadImg(std::string path, SDL_Renderer* screen)
+{
+	return statusPane.loadFromFile(path, screen);
+}
+
+void hero_status::render(SDL_Renderer* screen, int hpPercnt, int expPercent)
+{
+	setHpClip(hpPercnt);
+	setExpClip(expPercent);
+	statusPane.render(0, LEVEL_HEIGHT - 104, screen, &statusPaneClip, 1, 3);
+	statusPane.render(90, LEVEL_HEIGHT - 47, screen, &hpClip, 1, 3);
+	statusPane.render(90, LEVEL_HEIGHT - 14, screen, &expClip, 1, 3);
+}
+
+void hero_status::setHpClip(int w)
+{
+	hpClip.x = 0;
+	hpClip.y = 39;
+	hpClip.w = w;
+	hpClip.h = 9;
+}
+
+void hero_status::setExpClip(int w)
+{
+	expClip.x = 0;
+	expClip.y = 57;
+	expClip.w = w;
+	expClip.h = 7;
+}
+
+bool Player::loadStatusTexture(std::string path, SDL_Renderer* screen)
+{
+	return status.loadImg(path, screen);
+}
+
+void Player::renderStatus(SDL_Renderer* screen)
+{
+	int hpPercent = (1.0 * currentHp / maxHP) * 128;
+	int expPercent = (1.0 * exp / maxExp) * 128;
+	status.render(screen, hpPercent, expPercent);
 }

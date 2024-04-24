@@ -29,3 +29,8 @@ SDL_FRect Object::getBox()
 {
 	return mBox;
 }
+
+void Object::setType(int t)
+{
+	this->mType = t;
+}

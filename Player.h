@@ -7,6 +7,26 @@
 #include"Tile.h"
 #include"Entity.h"
 
+struct hero_status
+{
+	hero_status();
+	~hero_status();
+	void free();
+	LTexture statusPane;
+	SDL_Rect statusPaneClip;
+	SDL_Rect hpClip;
+	SDL_Rect expClip;
+
+	void setHpClip(int w);
+	void setExpClip(int w);
+
+
+
+	void render(SDL_Renderer* screen, int hpPercnt, int expPercent);
+	bool loadImg(std::string path, SDL_Renderer* screen);
+
+};
+
 class Player
 {
 public:
@@ -17,6 +37,7 @@ public:
 	void handleEvent(SDL_Event& e, Tile**** tiles);
 	void render(SDL_Renderer* screen, SDL_FRect& camera, float scale = 1);
 	void renderHp(SDL_Renderer* screen, SDL_FRect& camera, float scale = 1);
+	void renderStatus(SDL_Renderer* screen);
 	void setCamera(SDL_FRect& camera, float scale);
 	void attack(Entity* target);
 
@@ -32,6 +53,7 @@ public:
 
 	bool loadPlayerTexture(std::string path, SDL_Renderer* screen);
 	bool loadHpTexture(std::string path1, std::string path2, SDL_Renderer* screen);
+	bool loadStatusTexture(std::string path, SDL_Renderer* screen);
 	void attacked(int dame);
 	void setFacing(int direct);
 
@@ -58,12 +80,16 @@ private:
 	int maxHP;
 	int currentHp;
 
-	int dame;
+	int minDame;
+	int maxDame;
+
 	bool moved;
 	int turn;
+	int exp;
+	int maxExp;
+	hero_status status;
 
 	Facing facing;
-
 	
 };
 

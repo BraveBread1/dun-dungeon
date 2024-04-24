@@ -95,7 +95,7 @@ bool FogOfWar::hasLOS(int i1, int j1, int i2, int j2)
 	return 0;
 }
 
-void FogOfWar::updateSolid(Tile**** tileSet)
+void FogOfWar::updateSolid(Tile**** tileSet, Object*** objSet)
 {
 	int j, i;
 	for (i = 0; i < LEVEL1_ROWS; i++)
@@ -120,6 +120,16 @@ void FogOfWar::updateSolid(Tile**** tileSet)
 				{
 					hasSolid[i][j] = 1;
 				}
+			}
+		}
+	}
+	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	{
+		for (int j = 0; j < LEVEL1_COLS; ++j)
+		{
+			if (objSet[i][j]->getType() == 216 || objSet[i][j]->getType() == 113)
+			{
+				hasSolid[i][j] = 1;
 			}
 		}
 	}

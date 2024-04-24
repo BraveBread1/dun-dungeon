@@ -21,7 +21,7 @@ public:
 
 	void setAlpha(Uint8 alpha);
 
-	void render(float x, float y, SDL_Renderer* screen, SDL_Rect* clip = NULL, float scale = 1.0, double angle = 0.0, SDL_FPoint* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	void render(float x, float y, SDL_Renderer* screen, SDL_Rect* clip = NULL, float scale = 1.0, float scaleNotZoom = 1.0, double angle = 0.0, SDL_FPoint* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
 	int getWidth();
 	int getHeight();

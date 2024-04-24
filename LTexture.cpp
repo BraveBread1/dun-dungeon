@@ -72,13 +72,13 @@ void LTexture::setAlpha(Uint8 alpha)
 	SDL_SetTextureAlphaMod(mTexture, alpha);
 }
 
-void LTexture::render(float x, float y, SDL_Renderer* screen, SDL_Rect* clip, float scale, double angle, SDL_FPoint* center, SDL_RendererFlip flip)
+void LTexture::render(float x, float y, SDL_Renderer* screen, SDL_Rect* clip, float scale, float scaleNotZoom, double angle, SDL_FPoint* center, SDL_RendererFlip flip)
 {
 	SDL_FRect renderQuad = { x * scale, y * scale, mWidth * scale, mHeight * scale };
 	if (clip != NULL)
 	{
-		renderQuad.w = (float)clip->w * scale;
-		renderQuad.h = (float)clip->h * scale;
+		renderQuad.w = (float)clip->w * scale * scaleNotZoom;
+		renderQuad.h = (float)clip->h * scale * scaleNotZoom;
 	}
 
 	SDL_RenderCopyExF(screen, mTexture, clip, &renderQuad, angle, center, flip);

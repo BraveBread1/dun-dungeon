@@ -8,11 +8,13 @@ Entity::Entity(int i, int j, int type)
 
 	//if (mType == 1)
 	//{
-		this->maxHP = 100;
+		this->maxHP = 8;
 		this->currentHp = this->maxHP;
-		this->dame = 10;
+		this->minDame = 1;
+		this->maxDame = 4;
 		this->alert = false;
 		hunt = 0;
+		/*monsStatus = NONE;*/
 	//}
 
 		sawI = -1;
@@ -54,8 +56,35 @@ void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTextur
 	if (checkCollision(camera, mBox))
 	{
 		setBox();
-		setEntClip((time / 100) % 11 * 16, 0);
-		entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale);
+		
+		if (monsStatus == NONE)
+		{
+			setEntClip((time / 120) % 5 * 16 + 6 * 16, 0);
+			if (goDest == LEFT)
+			{
+				entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale, 1, 0, NULL, SDL_FLIP_HORIZONTAL);
+			}
+			else
+			{
+				entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				setEntClip(i * 16 + 32, 0);
+				if (goDest == LEFT)
+				{
+					entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale, 1, 0, NULL, SDL_FLIP_HORIZONTAL);
+				}
+				else
+				{
+					entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale);
+				}
+			}
+			setStatus(NO_ATTACK);
+		}
 		renderHp(screen, greenHpTexture, redHpTexture, camera, scale);
 	}
 }
@@ -131,7 +160,6 @@ void Entity::renderHp(SDL_Renderer* screen, LTexture& greenHpTexture, LTexture& 
 bool Entity::nextToPlayer(int pi, int pj)
 {
 	if (i == pi && j == pj) {
-		std::cout << "the dao nao lai bang duoc" << std::endl;
 		return false;
 	}
 	if (i == pi - 1 || i == pi || i == pi + 1)
@@ -153,8 +181,6 @@ bool Entity::nextToPlayer(int pi, int pj)
 
 void Entity::move(int di, int dj, bool ** hasSolid)
 {
-	std::cout << di << " " << dj << std::endl;
-	std::cout << "ent moved" << std::endl;
 	int ci, cj;
 	ci = this->i + di;
 	cj = this->j + dj;
@@ -170,11 +196,6 @@ void Entity::move(int di, int dj, bool ** hasSolid)
 	this->j = cj;
 }
 
-//void Entity::attack(Player* player)
-//{
-//	player->attacked(dame);
-//}
-
 void Entity::setPath(Dest go)
 {
 	goDest = go;
@@ -182,7 +203,8 @@ void Entity::setPath(Dest go)
 
 int Entity::getDame()
 {
-	return this->dame;
+	int dame = rand() % maxDame + minDame;
+	return dame;
 }
 
 void Entity::setBox()
@@ -203,18 +225,6 @@ bool Entity::getAlert()
 	return alert;
 }
 
-//void Entity::think(int pi, int pj, int** hasSolid)
-//{
-//	if (alert != true)
-//	{
-//		lookForPlayer(pi, pj, hasSolid);
-//	}
-//	else if (hasLOSglobal(pi, pj, i, j, hasSolid))
-//	{
-//		moveToPlayer();
-//	}
-//}
-
 void Entity::lookForPlayer(int pi, int pj, bool** hasSolid)
 {
 	if (getDistance(pi, pj, i, j) <= VIS_DISTANCE && hasLOSglobal(pi, pj, i, j, hasSolid))
@@ -223,19 +233,6 @@ void Entity::lookForPlayer(int pi, int pj, bool** hasSolid)
 		hunt = 3;
 	}
 }
-
-//void Entity::moveToPlayer(Entity* e)
-//{
-//	int dx, dy;
-//
-//	createAStarRoute(e, dungeon.player->x, dungeon.player->y, &dx, &dy);
-//
-//	moveEntity(e, dx, dy);
-//
-//	m->patrolDest.x = dungeon.player->x;
-//
-//	m->patrolDest.y = dungeon.player->y;
-//}
 
 void Entity::setPatrolDest(int j, int i)
 {
@@ -303,4 +300,9 @@ bool Entity::gotLastSaw()
 	{
 		return false;
 	}
+}
+
+void Entity::setStatus(Status status)
+{
+	monsStatus = status;
 }

@@ -16,8 +16,8 @@
 const int LEVEL_WIDTH = 512;
 const int LEVEL_HEIGHT = 736;
 
-const int SCREEN_WIDTH = 600;
-const int SCREEN_HEIGHT = 800;
+const int SCREEN_WIDTH = 1500;
+const int SCREEN_HEIGHT = 750;
 
 const int SCREEN_BPP = 32;
 

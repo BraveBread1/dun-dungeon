@@ -10,6 +10,7 @@ public:
 	Object(int i, int j, int type);
 	void render(SDL_FRect& camera, LTexture& objTexture, SDL_Rect clip, SDL_Renderer* screen, float scale = 1.0);
 	int getType();
+	void setType(int t);
 	SDL_FRect getBox();
 
 private:
