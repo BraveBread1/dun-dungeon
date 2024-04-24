@@ -152,6 +152,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectLayer.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SoundEffect.cpp" />
     <ClCompile Include="Tile.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectLayer.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="SoundEffect.h" />
     <ClInclude Include="Tile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

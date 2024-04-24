@@ -24,6 +24,10 @@ Game::Game()
 	}
 
 	mGameSate = MENU;
+	playerState = PLAYER_NO_ATTACK;
+	monsState = MONS_NO_ATTACK;
+	monsAttackStart = 0;
+	moveStart = 0;
 }
 
 Game::~Game()
@@ -139,17 +143,10 @@ void Game::handleEvent(SDL_Event e)
 			else if (scale >= 3.5) scale = 3.5;
 		}
 
-
 		if (mPlayer->getTurn())
 		{
 			doPlayer(e);
 			handleObjectEvent();
-		}
-	
-		if (mPlayer->getTurn() == 0)
-		{
-			doEntity();
-			mPlayer->setTurn(1);
 		}
 	}
 }
@@ -191,9 +188,8 @@ void Game::render()
 			if (i == 3)
 			{
 				mObjectLayer->render(camera, mRenderer, scale);
-				mPlayer->render(mRenderer, camera, scale);
-				mEntLayer->render(camera, mRenderer, timer.getTicks(), scale);
-				
+				mPlayer->render(mRenderer, camera, SDL_GetTicks() - playerAttackStart, scale);
+				mEntLayer->render(camera, mRenderer, SDL_GetTicks() - monsAttackStart, scale);
 			}
 		}
 		fogOfWar->render(camera, mRenderer, scale);
@@ -233,13 +229,100 @@ void Game::run()
 			renderMenu();
 
 		}
-		else
+		else if (mGameSate == PLAYER_ACTION)
 		{
-			updateHasSolid();
-			handleEvent(*e);
-			fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
-			fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
-			render();
+			if (playerState == PLAYER_NO_ATTACK)
+			{
+				updateHasSolid();
+				handleEvent(*e);
+				fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
+				fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
+				render();
+				if (playerState == PLAYER_ATTACK)
+				{
+					updateHasSolid();
+					handleAttackingEvent(*e);
+					fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
+					fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
+					Uint32 currentTime = SDL_GetTicks();
+					player_melee_attack.playOnce();
+					render();
+					if (currentTime > playerAttackStart + ATTACK_TIME)
+					{
+						playerState = PLAYER_NO_ATTACK;
+						player_melee_attack.reset();
+						mGameSate = MONSTER_ACTION;
+					}
+				}
+				else
+				{
+					mGameSate = MONSTER_ACTION;
+				}
+			}
+			else if(playerState == PLAYER_ATTACK)
+			{
+				updateHasSolid();
+				handleAttackingEvent(*e);
+				fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
+				fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
+				Uint32 currentTime = SDL_GetTicks();
+				player_melee_attack.playOnce();
+				render();
+				if (currentTime > playerAttackStart + ATTACK_TIME)
+				{
+					playerState = PLAYER_NO_ATTACK;
+					player_melee_attack.reset();
+					mGameSate = MONSTER_ACTION;
+				}
+			}
+		}
+		else if (mGameSate == MONSTER_ACTION)
+		{
+			if (monsState == MONS_NO_ATTACK)
+			{
+				if (mPlayer->getTurn() == 0)
+				{
+					doEntity();
+					mPlayer->setTurn(1);
+				}
+				if (monsState == MONS_ATTACK)
+				{
+					handleAttackingEvent(*e);
+					updateHasSolid();
+					fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
+					fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
+					Uint32 currentTime = SDL_GetTicks();
+					mons_melee_attack.playOnce();
+					render();
+					if (currentTime > monsAttackStart + ATTACK_TIME)
+					{
+						monsState = MONS_NO_ATTACK;
+						mons_melee_attack.reset();
+						mGameSate = PLAYER_ACTION;
+					}
+				}
+				else
+				{
+					mGameSate = PLAYER_ACTION;
+				}
+			}
+			else if (monsState == MONS_ATTACK)
+			{
+				handleAttackingEvent(*e);
+				updateHasSolid();
+				fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
+				fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
+				Uint32 currentTime = SDL_GetTicks();
+				mons_melee_attack.playOnce();
+				render();
+				if (currentTime > monsAttackStart + ATTACK_TIME)
+				{
+					monsState = MONS_NO_ATTACK;
+					mons_melee_attack.reset();
+					mGameSate = PLAYER_ACTION;
+				}
+			}
+
 		}
 
 	}
@@ -341,6 +424,18 @@ bool Game::gameInit()
 
 
 	music = Mix_LoadMUS("assests/music/core_src_main_assets_music_sewers_1.ogg");
+
+	if (mons_melee_attack.loadFromFile("assests/sounds/melee_attack.mp3") == false)
+	{
+		flag = false;
+	}
+	mons_melee_attack.setVolume(20);
+
+	if (player_melee_attack.loadFromFile("assests/sounds/melee_attack.mp3") == false)
+	{
+		flag = false;
+	}
+	player_melee_attack.setVolume(20);
 
 	srand(time(NULL));
 
@@ -487,6 +582,9 @@ void Game::doPlayer(SDL_Event& e)
 	{
 		isMonster = true;
 		mPlayer->attack(target);
+		playerState = PLAYER_ATTACK;
+		playerAttackStart = SDL_GetTicks();
+		mGameSate = PLAYER_ACTION;
 		if (target->getDead())
 		{
 			mEntLayer->delEnt(target);
@@ -509,19 +607,6 @@ void Game::doEntity()
 	Entity* currentMonster = mEntLayer->getHead();
 	while (currentMonster != NULL)
 	{
-		//if (hasLOS(currentMonster->getPosI(), currentMonster->getPosJ()))
-		//{
-		//	if (currentMonster->nextToPlayer(mPlayer->getPosI(), mPlayer->getPosJ()))
-		//	{
-		//		mPlayer->attacked(currentMonster);
-		//	}
-		//	else
-		//	{
-		//		currentMonster->setPath(pathFinding(currentMonster));
-		//		currentMonster->movte();
-		//	}
-		//}
-
 		entThink(currentMonster);
 		currentMonster = currentMonster->next;
 	}
@@ -688,26 +773,6 @@ void Game::pathFinding(Entity* monster, int* di, int* dj, int pi, int pj)
 
 }
 
-//void Game::entThink(Entity* currentEnt)
-//{
-//	if (currentEnt->getAlert() == false)
-//	{
-//		currentEnt->lookForPlayer(mPlayer->getPosI(), mPlayer->getPosJ(), hasSolid);
-//		//if (currentEnt->getAlert() == true)
-//		//{
-//		//	moveToPlayer(currentEnt);
-//		//}
-//	}
-//	else if (hasLOS(currentEnt->getPosI(), currentEnt->getPosJ()))
-//	{
-//		moveToPlayer(currentEnt);
-//	}
-//	else
-//	{
-//		patrol(currentEnt);
-//	}
-//}
-
 void Game::entThink(Entity* currentEnt)
 {
 	if (currentEnt->getAlert() == 0)
@@ -756,7 +821,10 @@ void Game::moveToPlayer(Entity* currentEnt)
 	if (currentEnt->nextToPlayer(mPlayer->getPosI(), mPlayer->getPosJ()))
 	{
 		mPlayer->attacked(currentEnt->getDame());
-		currentEnt->setStatus(Entity::Status::ATTACK);
+		currentEnt->setStatus(Entity::Status::M_ATTACK);
+		monsState = MONS_ATTACK;
+		mGameSate = MONSTER_ACTION;
+		monsAttackStart = SDL_GetTicks();
 	}
 	else
 	{
@@ -817,8 +885,28 @@ void Game::handleMenuEvent(SDL_Event e)
 			mMenu->handleEvent(e, mGameSate);
 			if (mMenu->enter->getPressed() == 2)
 			{
-				mGameSate = PLAYING;
+				mGameSate = PLAYER_ACTION;
 			}
+		}
+	}
+}
+
+void Game::handleAttackingEvent(SDL_Event e)
+{
+	while (SDL_PollEvent(&e))
+	{
+		if (e.type == SDL_QUIT)
+		{
+			isPlaying = false;
+		}
+		else if (e.type == SDL_MOUSEWHEEL)
+		{
+			if (e.wheel.y != 0)
+			{
+				scale += e.wheel.preciseY * 0.1;
+			}
+			if (scale < 1) scale = 1;
+			else if (scale >= 3.5) scale = 3.5;
 		}
 	}
 }

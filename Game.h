@@ -12,10 +12,21 @@
 #include"FogOfWar.h"
 #include"Astar.h"
 #include"Menu.h"
+#include"SoundEffect.h"
 
 enum GameState
 {
-	MENU, PLAYING, DYING
+	MENU, DYING, PLAYER_ACTION, MONSTER_ACTION
+};
+
+enum PlayerState
+{
+	PLAYER_NO_ATTACK, PLAYER_ATTACK, PLAYER_MOVE
+};
+
+enum MonsterState
+{
+	MONS_NO_ATTACK, MONS_ATTACK
 };
 
 class Game
@@ -50,6 +61,8 @@ public:
 	void renderMenu();
 	void handleMenuEvent(SDL_Event e);
 
+	void handleAttackingEvent(SDL_Event e);
+
 
 
 private:
@@ -70,7 +83,15 @@ private:
 	FogOfWar* fogOfWar;
 
 	int mGameSate;
+	int playerState;
+	int monsState;
 	Menu* mMenu;
+
+	Uint32 monsAttackStart;
+	Uint32 playerAttackStart;
+	Uint32 moveStart;
+	SoundEffect mons_melee_attack;
+	SoundEffect player_melee_attack;
 };
 
 #endif

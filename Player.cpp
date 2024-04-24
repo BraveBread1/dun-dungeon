@@ -8,11 +8,12 @@ Player::Player(int i, int j)
 	this->maxHP = 20;
 	this->currentHp = 20;
 	this->minDame = 1;
-	this->maxDame = 10;
+	this->maxDame = 2;
 	turn = 1;
 
 	exp = 3;
 	maxExp = 10;
+	crStatus = NO_ATTACK;
 
 }
 
@@ -62,18 +63,29 @@ void Player::handleEvent(SDL_Event& e, Tile**** tiles)
 	}
 }
 
-void Player::render(SDL_Renderer* screen, SDL_FRect& camera, float scale)
+void Player::render(SDL_Renderer* screen, SDL_FRect& camera, Uint32 time, float scale)
 {
-	if (facing == RIGHT)
+	if (crStatus == NO_ATTACK)
 	{
-		setClip(0, 15, 12, 15);
+		if (facing == RIGHT)
+		{
+			setClip(0, 15, 12, 15);
+		}
+		else if (facing == LEFT)
+		{
+			setClip(12, 15, 12, 15);
+		}
+		player.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 6, screen, &clip, scale);
 	}
-	else if (facing == LEFT)
+	else if (crStatus == ATTACK)
 	{
-		setClip(12, 15, 12, 15);
+		setClip(((time / 120) % 3) * 12 + 156, 15, 12, 15);
+		player.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 6, screen, &clip, scale);
+		if (time > ATTACK_TIME)
+		{
+			setCrStatus(0);
+		}
 	}
-	player.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 6, screen, &clip, scale);
-	renderHp(screen, camera, scale);
 }
 
 void Player::renderHp(SDL_Renderer* screen, SDL_FRect& camera, float scale)
@@ -156,6 +168,7 @@ void Player::attack(Entity* target)
 {
 	int dame = rand() % maxDame + minDame;
 	target->attacked(dame);
+	crStatus = ATTACK;
 }
 
 void Player::setGreenHpClip(int x, int y, int w, int h)
@@ -229,6 +242,11 @@ hero_status::hero_status()
 	expClip.y = 57;
 	expClip.w = 128;
 	expClip.h = 7;
+
+	avataClip.x = 0;
+	avataClip.y = 15;
+	avataClip.w = 12;
+	avataClip.h = 15;
 }
 
 hero_status::~hero_status()
@@ -243,7 +261,7 @@ void hero_status::free()
 
 bool hero_status::loadImg(std::string path, SDL_Renderer* screen)
 {
-	return statusPane.loadFromFile(path, screen);
+	return statusPane.loadFromFile(path, screen) && avata.loadFromFile("assests/sprite/warrior.png", screen);
 }
 
 void hero_status::render(SDL_Renderer* screen, int hpPercnt, int expPercent)
@@ -253,6 +271,7 @@ void hero_status::render(SDL_Renderer* screen, int hpPercnt, int expPercent)
 	statusPane.render(0, LEVEL_HEIGHT - 104, screen, &statusPaneClip, 1, 3);
 	statusPane.render(90, LEVEL_HEIGHT - 47, screen, &hpClip, 1, 3);
 	statusPane.render(90, LEVEL_HEIGHT - 14, screen, &expClip, 1, 3);
+	avata.render(25, LEVEL_HEIGHT - 80, screen, &avataClip, 1, 3);
 }
 
 void hero_status::setHpClip(int w)
@@ -281,4 +300,9 @@ void Player::renderStatus(SDL_Renderer* screen)
 	int hpPercent = (1.0 * currentHp / maxHP) * 128;
 	int expPercent = (1.0 * exp / maxExp) * 128;
 	status.render(screen, hpPercent, expPercent);
+}
+
+void Player::setCrStatus(int t)
+{
+	crStatus = t;
 }

@@ -14,7 +14,7 @@ Entity::Entity(int i, int j, int type)
 		this->maxDame = 4;
 		this->alert = false;
 		hunt = 0;
-		/*monsStatus = NONE;*/
+		monsStatus = M_NO_ATTACK;
 	//}
 
 		sawI = -1;
@@ -71,19 +71,19 @@ void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTextur
 		}
 		else
 		{
-			for (int i = 0; i < 4; ++i)
+			setEntClip((time / 120) % 4 * 16 + 32, 0);
+			if (goDest == LEFT)
 			{
-				setEntClip(i * 16 + 32, 0);
-				if (goDest == LEFT)
-				{
-					entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale, 1, 0, NULL, SDL_FLIP_HORIZONTAL);
-				}
-				else
-				{
-					entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale);
-				}
+				entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale, 1, 0, NULL, SDL_FLIP_HORIZONTAL);
 			}
-			setStatus(NO_ATTACK);
+			else
+			{
+				entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale);
+			}
+			if (time > ATTACK_TIME)
+			{
+				setStatus(M_NO_ATTACK);
+			}
 		}
 		renderHp(screen, greenHpTexture, redHpTexture, camera, scale);
 	}
@@ -166,6 +166,14 @@ bool Entity::nextToPlayer(int pi, int pj)
 	{
 		if (j == pj - 1 || j == pj || j == pj + 1)
 		{
+			if (j == pj - 1)
+			{
+				goDest = RIGHT;
+			}
+			else if (j == pj + 1)
+			{
+				goDest = LEFT;
+			}
 			return true;
 		}
 		else

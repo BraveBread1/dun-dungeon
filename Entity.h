@@ -15,7 +15,7 @@ public:
 
 	enum Status
 	{
-		NO_ATTACK, ATTACK
+		M_NO_ATTACK, M_ATTACK
 	};
 
 	Entity(int i, int j, int type);
@@ -54,9 +54,7 @@ public:
 	bool gotLastSaw();
 
 	bool getDead();
-	//void think(int pi, int pj, int** hasSolid);
 	void lookForPlayer(int pi, int pj, bool ** hasSolid);
-	//void moveToPlayer();
 	void setPatrolDest(int j, int i);
 	SDL_Point getPatrolDest();
 

@@ -47,6 +47,9 @@ const Uint8 HALF_FOG = 175;
 const Uint8 FULL_FOG = 255;
 const Uint8 NONE_FOG = 0;
 
+const Uint32 ATTACK_TIME = 480;
+const Uint32 MOVE_TIME = 10;
+
 bool checkCollision(SDL_FRect a, SDL_FRect b);
 int getDistance(int i, int j, int mi, int mj);
 bool hasLOSglobal(int i1, int j1, int i2, int j2, bool** hasSolid);

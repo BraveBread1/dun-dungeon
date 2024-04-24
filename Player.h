@@ -16,6 +16,8 @@ struct hero_status
 	SDL_Rect statusPaneClip;
 	SDL_Rect hpClip;
 	SDL_Rect expClip;
+	LTexture avata;
+	SDL_Rect avataClip;
 
 	void setHpClip(int w);
 	void setExpClip(int w);
@@ -35,7 +37,7 @@ public:
 
 	void FreePlayer();
 	void handleEvent(SDL_Event& e, Tile**** tiles);
-	void render(SDL_Renderer* screen, SDL_FRect& camera, float scale = 1);
+	void render(SDL_Renderer* screen, SDL_FRect& camera, Uint32 time, float scale = 1);
 	void renderHp(SDL_Renderer* screen, SDL_FRect& camera, float scale = 1);
 	void renderStatus(SDL_Renderer* screen);
 	void setCamera(SDL_FRect& camera, float scale);
@@ -59,13 +61,20 @@ public:
 
 	void setTurn(int t);
 	int getTurn();
+	void setCrStatus(int s);
 	enum Facing
 	{
 		LEFT,
 		RIGHT
 	};
+	enum Status
+	{
+		NO_ATTACK, ATTACK, MOVING
+	};
 
 private:
+
+
 	LTexture player;
 	LTexture greenHp;
 	SDL_Rect greenHpClip;
@@ -90,6 +99,7 @@ private:
 	hero_status status;
 
 	Facing facing;
+	int crStatus;
 	
 };
 

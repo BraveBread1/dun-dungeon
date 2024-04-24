@@ -1,4 +1,9 @@
-﻿  Menu.cpp
+﻿  Game.cpp
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Game.cpp(140,31): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Game.cpp(200,97): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Game.cpp(200,54): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Game.cpp(440,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Game.cpp(906,31): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
   Dun dungeon game.vcxproj -> C:\Users\admin\projects\Dun dungeon game vs\x64\Debug\Dun dungeon game.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.
