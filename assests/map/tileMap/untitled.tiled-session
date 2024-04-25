@@ -29,6 +29,14 @@
         "C:/Users/admin/images/tilemap/platform.tsx": {
             "scaleInDock": 1
         },
+        "boss_room.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 329.33333333333337,
+                "y": 204.99999999999997
+            }
+        },
         "map1.tmx": {
             "expandedGroupLayers": [
                 6
@@ -36,8 +44,8 @@
             "scale": 1.5,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 221.33333333333337,
-                "y": 422.99999999999994
+                "x": 207.33333333333337,
+                "y": 420.99999999999994
             }
         },
         "map1.tmx#rat": {
@@ -51,6 +59,17 @@
         },
         "map1.tmx#water0": {
             "scaleInDock": 5.5
+        },
+        "map2.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 239,
+                "y": 158.25
+            }
+        },
+        "map2.tmx#water0": {
+            "scaleInDock": 1
         },
         "map_test.tmx": {
             "scale": 1.6862499999999998,
@@ -67,13 +86,13 @@
         }
     },
     "last.externalTilesetPath": "C:/Users/admin/projects/Dun dungeon game vs/Dun dungeon game/assests/map/tileMap",
-    "last.imagePath": "C:/Users/admin/projects/Dun dungeon game vs/Dun dungeon game/assests/map/tileMap",
+    "last.imagePath": "C:/Users/admin/projects/Dun dungeon game vs/Dun dungeon game/assests/map",
     "map.fixedSize": true,
-    "map.height": 30,
+    "map.height": 24,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
-    "map.width": 35,
+    "map.width": 41,
     "openFiles": [
         "map1.tmx",
         "tiles_sewers.tsx"

@@ -48,7 +48,7 @@ const Uint8 FULL_FOG = 255;
 const Uint8 NONE_FOG = 0;
 
 const Uint32 ATTACK_TIME = 480;
-const Uint32 MOVE_TIME = 10;
+const Uint32 MOVE_TIME = 200;
 
 bool checkCollision(SDL_FRect a, SDL_FRect b);
 int getDistance(int i, int j, int mi, int mj);

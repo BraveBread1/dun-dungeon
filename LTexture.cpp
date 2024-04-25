@@ -94,11 +94,11 @@ int LTexture::getHeight()
 	return mHeight;
 }
 
-bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor, TTF_Font* font, SDL_Renderer* screen)
+bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor, TTF_Font* font, SDL_Renderer* screen, int wrappingSize)
 {
 	free();
 
-	SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
+	SDL_Surface* textSurface = TTF_RenderText_Solid_Wrapped(font, textureText.c_str(), textColor, wrappingSize);
 	if (textSurface == NULL)
 	{
 		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());

@@ -17,6 +17,8 @@ public:
 
 	void free();
 	Button* enter;
+	Button* instruction;
+	Button* quit;
 
 private:
 	LTexture menuTexture;

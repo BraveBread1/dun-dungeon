@@ -61,6 +61,7 @@ public:
 	bool isBlocked(int j, int i, bool** hasSolid, int pj, int pi, Entity* head);
 
 	void setStatus(Status status);
+	int getExp();
 
 private:
 	int i, j;
@@ -74,6 +75,7 @@ private:
 	
 	int maxHP;
 	int currentHp;
+	int exp;
 
 	int minDame;
 	int maxDame;

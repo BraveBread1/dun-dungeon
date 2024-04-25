@@ -1,8 +1,4 @@
 ﻿#include"CommonFunc.h"
-#include"LTexture.h"
-#include"Player.h"
-#include"Tile.h"
-#include"Map.h"
 #include"Game.h"
 
 int main(int argc, char* argv[])

@@ -12,10 +12,12 @@ Entity::Entity(int i, int j, int type)
 		this->currentHp = this->maxHP;
 		this->minDame = 1;
 		this->maxDame = 4;
+		exp = 1;
+	//}
+
 		this->alert = false;
 		hunt = 0;
 		monsStatus = M_NO_ATTACK;
-	//}
 
 		sawI = -1;
 		sawJ = -1;
@@ -313,4 +315,9 @@ bool Entity::gotLastSaw()
 void Entity::setStatus(Status status)
 {
 	monsStatus = status;
+}
+
+int Entity::getExp()
+{
+	return exp;
 }

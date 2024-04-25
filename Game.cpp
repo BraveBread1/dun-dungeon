@@ -15,6 +15,7 @@ Game::Game()
 
 	fogOfWar = NULL;
 	mMenu = NULL;
+	/*mFont = NULL;*/
 
 	scale = 2;
 	hasSolid = new bool* [LEVEL1_ROWS];
@@ -27,7 +28,7 @@ Game::Game()
 	playerState = PLAYER_NO_ATTACK;
 	monsState = MONS_NO_ATTACK;
 	monsAttackStart = 0;
-	moveStart = 0;
+	playerMoveStart = 0;
 }
 
 Game::~Game()
@@ -55,7 +56,8 @@ void Game::close()
 	fogOfWar->free();
 	fogOfWar = NULL;
 
-	winText.free();
+	TTF_CloseFont(mFont);
+	mFont = NULL;
 
 	clearSolidArr();
 
@@ -83,7 +85,7 @@ Player* Game::createPlayer(int startI, int startJ, std::string path)
 		player->setClip(0, 15, PLAYER_WIDTH, PLAYER_HEIGHT);
 	}
 
-	if (player->loadHpTexture("assests/img/green_hp.png", "assests/img/red_hp.png", mRenderer) == false)
+	if (player->loadStatusTexture("assests/img/hero_status.png", mRenderer, mFont) == false)
 	{
 		std::cerr << "Failed to load hp texture" << std::endl;
 	}
@@ -188,7 +190,19 @@ void Game::render()
 			if (i == 3)
 			{
 				mObjectLayer->render(camera, mRenderer, scale);
-				mPlayer->render(mRenderer, camera, SDL_GetTicks() - playerAttackStart, scale);
+				if (playerState == PLAYER_ATTACK)
+				{
+					mPlayer->render(mRenderer, camera, SDL_GetTicks() - playerAttackStart, scale);
+				}
+				else if(playerAttackStart == PLAYER_MOVE)
+				{
+					mPlayer->render(mRenderer, camera, SDL_GetTicks() - playerMoveStart, scale);
+				}
+				else
+				{
+					mPlayer->render(mRenderer, camera, 0, scale);
+				}
+				
 				mEntLayer->render(camera, mRenderer, SDL_GetTicks() - monsAttackStart, scale);
 			}
 		}
@@ -197,7 +211,7 @@ void Game::render()
 	}
 	else
 	{
-		winText.render((SCREEN_WIDTH - winText.getWidth()) / 2, (SCREEN_HEIGHT - winText.getHeight()) / 2, mRenderer);
+		/*winText.render((SCREEN_WIDTH - winText.getWidth()) / 2, (SCREEN_HEIGHT - winText.getHeight()) / 2, mRenderer);*/
 	}
 
 
@@ -235,18 +249,12 @@ void Game::run()
 			{
 				updateHasSolid();
 				handleEvent(*e);
-				fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
-				fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
-				render();
 				if (playerState == PLAYER_ATTACK)
 				{
 					updateHasSolid();
 					handleAttackingEvent(*e);
-					fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
-					fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
 					Uint32 currentTime = SDL_GetTicks();
 					player_melee_attack.playOnce();
-					render();
 					if (currentTime > playerAttackStart + ATTACK_TIME)
 					{
 						playerState = PLAYER_NO_ATTACK;
@@ -263,11 +271,8 @@ void Game::run()
 			{
 				updateHasSolid();
 				handleAttackingEvent(*e);
-				fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
-				fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
 				Uint32 currentTime = SDL_GetTicks();
 				player_melee_attack.playOnce();
-				render();
 				if (currentTime > playerAttackStart + ATTACK_TIME)
 				{
 					playerState = PLAYER_NO_ATTACK;
@@ -275,6 +280,10 @@ void Game::run()
 					mGameSate = MONSTER_ACTION;
 				}
 			}
+			fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
+			fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
+			mPlayer->update(mRenderer, mFont);
+			render();
 		}
 		else if (mGameSate == MONSTER_ACTION)
 		{
@@ -289,11 +298,8 @@ void Game::run()
 				{
 					handleAttackingEvent(*e);
 					updateHasSolid();
-					fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
-					fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
 					Uint32 currentTime = SDL_GetTicks();
 					mons_melee_attack.playOnce();
-					render();
 					if (currentTime > monsAttackStart + ATTACK_TIME)
 					{
 						monsState = MONS_NO_ATTACK;
@@ -310,11 +316,8 @@ void Game::run()
 			{
 				handleAttackingEvent(*e);
 				updateHasSolid();
-				fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
-				fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
 				Uint32 currentTime = SDL_GetTicks();
 				mons_melee_attack.playOnce();
-				render();
 				if (currentTime > monsAttackStart + ATTACK_TIME)
 				{
 					monsState = MONS_NO_ATTACK;
@@ -322,7 +325,10 @@ void Game::run()
 					mGameSate = PLAYER_ACTION;
 				}
 			}
-
+			fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
+			fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
+			mPlayer->update(mRenderer, mFont);
+			render();
 		}
 
 	}
@@ -377,6 +383,11 @@ bool Game::gameInit()
 		}
 	}
 
+	if (loadFont("assests/font/pixel_font.ttf", 28) == false)
+	{
+		std::cerr << "unable to load win text" << std::endl;
+	}
+
 	mMenu = createMenu();
 
 	mPlayer = createPlayer(6, 3, "assests/sprite/warrior.png");
@@ -385,10 +396,7 @@ bool Game::gameInit()
 	mMap = createMap();
 	mObjectLayer = creatObjectLayer();
 
-	if (loadText("assest/font/pixel_font.ttf", 28) == false)
-	{
-		std::cerr << "unable to load win text" << std::endl;
-	}
+
 
 	mEntLayer = new EntityLayer(LEVEL1_ROWS, LEVEL1_COLS);
 
@@ -406,8 +414,7 @@ bool Game::gameInit()
 			flag = false;
 			std::cerr << "unable to load entity texture" << std::endl;
 		}
-
-		if (mEntLayer->loadHpTexture("assests/img/green_hp.png", "assests/img/red_hp.png", mRenderer) == false)
+		if (mEntLayer->loadHpTexture("assests/img/green_hp.png", "assests/img/red_hp.png", mRenderer))
 		{
 			flag = false;
 			std::cerr << "unable to load entity's hp texture" << std::endl;
@@ -437,31 +444,26 @@ bool Game::gameInit()
 	}
 	player_melee_attack.setVolume(20);
 
+	if (player_moving.loadFromFile("assests/sounds/move.mp3") == false)
+	{
+		flag = false;
+	}
+	player_moving.setVolume(20);
+
 	srand(time(NULL));
 
 	return flag;
 }
 
-bool Game::loadText(std::string path, int fontSize)
+bool Game::loadFont(std::string path, int fontSize)
 {
 	bool success = true;
-	TTF_Font* font = NULL;
-	font = TTF_OpenFont("assests/font/pixel_font.ttf", 56);
-	if (font == NULL)
+	mFont = TTF_OpenFont(path.c_str(), 12);
+	if (mFont == NULL)
 	{
 		std::cerr << "Failed to load font! SDL_ttf Error: %s\n" << TTF_GetError();
 		success = false;
 	}
-	else
-	{
-		SDL_Color textColor = { 122, 0, 0 };
-		if (!winText.loadFromRenderedText("YOU WIN! OR NOT?", textColor, font, mRenderer))
-		{
-			std::cerr << "Failed to render text texture!\n";
-			success = false;
-		}
-	}
-	font = NULL;
 	return success;
 }
 
@@ -582,11 +584,13 @@ void Game::doPlayer(SDL_Event& e)
 	{
 		isMonster = true;
 		mPlayer->attack(target);
+		mPlayer->setCrStatus(1);
 		playerState = PLAYER_ATTACK;
 		playerAttackStart = SDL_GetTicks();
 		mGameSate = PLAYER_ACTION;
 		if (target->getDead())
 		{
+			mPlayer->earnExp(target->getExp());
 			mEntLayer->delEnt(target);
 		}
 
@@ -597,7 +601,10 @@ void Game::doPlayer(SDL_Event& e)
 	{
 		mPlayer->setPosI(i);
 		mPlayer->setPosJ(j);
-
+		//mPlayer->setCrStatus(2);
+		//playerState = PLAYER_MOVE;
+		//playerMoveStart = SDL_GetTicks();
+		//mGameSate = PLAYER_ACTION;
 	}
 
 }
@@ -886,6 +893,10 @@ void Game::handleMenuEvent(SDL_Event e)
 			if (mMenu->enter->getPressed() == 2)
 			{
 				mGameSate = PLAYER_ACTION;
+			}
+			if (mMenu->quit->getPressed() == 2)
+			{
+				isPlaying = false;
 			}
 		}
 	}

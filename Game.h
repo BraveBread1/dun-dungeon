@@ -44,7 +44,7 @@ public:
 	void run();
 	void render();
 	void handleEvent(SDL_Event e);
-	bool loadText(std::string path, int fontSize);
+	bool loadFont(std::string path, int fontSize);
 	void clearSolidArr();
 	void updateHasSolid();
 	int hasLOS(int x2, int y2);
@@ -77,7 +77,7 @@ private:
 	ObjectLayer* mObjectLayer;
 	float scale;
 	Mix_Music* music;
-	LTexture winText;
+	/*LTexture winText;*/
 	EntityLayer* mEntLayer;
 	LTimer timer;
 	FogOfWar* fogOfWar;
@@ -89,9 +89,12 @@ private:
 
 	Uint32 monsAttackStart;
 	Uint32 playerAttackStart;
-	Uint32 moveStart;
+	Uint32 playerMoveStart;
 	SoundEffect mons_melee_attack;
 	SoundEffect player_melee_attack;
+	SoundEffect player_moving;
+
+	TTF_Font* mFont;
 };
 
 #endif
