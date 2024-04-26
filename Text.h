@@ -16,8 +16,11 @@ struct Text
 
 	void free();
 	void initText(int x, int y, int size, SDL_Color color);
+	void setPos(int x, int y);
 	bool loadText(std::string text, TTF_Font* font, SDL_Renderer* screen, int wrappingSize);
 	void render(SDL_Renderer* screen);
+
+	std::string getText();
 };
 
 #endif

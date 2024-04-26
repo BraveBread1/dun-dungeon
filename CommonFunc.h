@@ -44,7 +44,7 @@ const int TOTAL_TILE_SPRITES = 273;
 //const int LEVEL1_COLS = 30;
 const int LEVEL_LAYERS = 5;
 
-const int MAX_MONSTER_TYPE = 2;
+const int MAX_MONSTER_TYPE = 4;
 
 const int VIS_DISTANCE = 10;
 

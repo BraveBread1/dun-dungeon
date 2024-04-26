@@ -9,8 +9,8 @@ Player::Player(int i, int j, int LEVEL_WIDTH, int LEVEL_HEIGHT, int LEVEL_ROWS, 
 	this->LEVEL_ROWS = LEVEL_ROWS;
 	this->LEVEL_COLS = LEVEL_COLS;
 
-	this->maxHP = 20;
-	this->currentHp = 20;
+	this->maxHP = 30;
+	this->currentHp = 30;
 	this->minDame = 1;
 	this->maxDame = 10;
 	turn = 1;
@@ -343,7 +343,7 @@ void Player::earnExp(int e)
 	this->exp += e;
 }
 
-void Player::update(SDL_Renderer* screen, TTF_Font* font)
+void Player::update(SDL_Renderer* screen, TTF_Font* font, bool& isPlaying, int& play)
 {
 	if (exp >= maxExp)
 	{
@@ -353,8 +353,14 @@ void Player::update(SDL_Renderer* screen, TTF_Font* font)
 		maxHP += 5;
 		minDame += 1;
 		maxDame += 1;
+		currentHp = maxHP;
 	}
 	status.update(level, currentHp, maxHP, exp, maxExp, screen, font);
+	if (currentHp == 0)
+	{
+		isPlaying = false;
+		play = -1;
+	}
 }
 
 void hero_status::update(int lv, int hp, int maxHp, int exp, int maxExp, SDL_Renderer* screen, TTF_Font* font)
@@ -374,4 +380,21 @@ void hero_status::update(int lv, int hp, int maxHp, int exp, int maxExp, SDL_Ren
 	{
 		std::cerr << "Failed to update exp text!\n";
 	}
+}
+
+void Player::reset()
+{
+	this->mPosI = 3;
+	this->mPosJ = 6;
+
+	this->maxHP = 20;
+	this->currentHp = 20;
+	this->minDame = 1;
+	this->maxDame = 10;
+	turn = 1;
+
+	exp = 0;
+	maxExp = 10;
+	level = 1;
+	crStatus = NO_ATTACK;
 }

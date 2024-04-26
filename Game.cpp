@@ -17,6 +17,8 @@ Game::Game()
 	LEVEL_HEIGHT = 736;
 	LEVEL_ROWS = 46;
 	LEVEL_COLS = 32;
+
+	restart = new Button(630, 500, 240, 60);
 }
 
 Game::~Game()
@@ -111,6 +113,13 @@ bool Game::gameInit()
 	mPlayer = createPlayer(3, 6, "assests/sprite/warrior.png");
 	music = Mix_LoadMUS("assests/music/core_src_main_assets_music_sewers_1.ogg");
 
+	winTexture.loadFromFile("assests/img/banners.png", mRenderer);
+	winTextureClip = { 12, 92, 118, 34 };
+	deadTexture.loadFromFile("assests/img/banners.png", mRenderer);
+	deadTextureClip = { 12, 124, 118, 32 };
+
+	restart->loadButtonTexture("assests/img/restart_button.png", mRenderer);
+
 	return flag;
 
 }
@@ -158,19 +167,19 @@ Player* Game::createPlayer(int startI, int startJ, std::string path)
 
 void Game::run()
 {
-	isPlaying = true;
+	isPlaying = 1;
 	SDL_Event* e = new SDL_Event;
 	Mix_PlayMusic(music, -1);
-	while (isPlaying)
+	int lv = 1;
+	while (isPlaying != 0)
 	{
 		if (gameState == MENU)
 		{
 			handleMenuEvent(*e);
 			renderMenu();
 		}
-		else
+		else if(gameState == PLAYING)
 		{
-			int lv = 3;
 			while (lv <= 3 && lv != -1)
 			{
 				if (lv != -1)
@@ -208,14 +217,89 @@ void Game::run()
 					currentLv->run(e, isPlaying);
 					if (currentLv->getWin())
 					{
-						++lv;
+						if (lv == 3)
+						{
+							gameState = WINNING;
+							lv = -1;
+						}
+						else
+						{
+							++lv;
+						}
+						
 					}
 					else lv = -1;
 					currentLv->close();
 					currentLv = NULL;
 				}
 			}
-			isPlaying = false;
+			if (isPlaying == -1)
+			{
+				gameState = DYING;
+				std::cout << "-1";
+			}
+			else
+			{
+				isPlaying = false;
+			}
+			
+			
+		}
+		else if (gameState == WINNING)
+		{
+			while (SDL_PollEvent(e))
+			{
+				if (e->type == SDL_QUIT)
+				{
+					isPlaying = false;
+				}
+				else
+				{
+					restart->hanldEvent(*e);
+					if (restart->getPressed())
+					{
+						lv = 1;
+						mPlayer->reset();
+						isPlaying = 1;
+						gameState = MENU;	
+					}
+				}
+			}
+			SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, RENDER_DRAW_COLOR);
+			SDL_RenderClear(mRenderer);
+			/*{ 12, 92, 118, 34 };*/
+			winTexture.render(573, 300, mRenderer, &winTextureClip, 1, 3);
+			restart->render(mRenderer);
+			SDL_RenderPresent(mRenderer);
+			
+		}
+		else
+		{
+			while (SDL_PollEvent(e))
+			{
+				if (e->type == SDL_QUIT)
+				{
+					isPlaying = false;
+				}
+				else
+				{
+					restart->hanldEvent(*e);
+					if (restart->getPressed())
+					{
+						lv = 1;
+						mPlayer->reset();
+						isPlaying = 1;
+						gameState = MENU;
+					}
+				}
+			}
+			SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, RENDER_DRAW_COLOR);
+			SDL_RenderClear(mRenderer);
+			//{ 12, 124, 118, 32 };
+			deadTexture.render(490, 300, mRenderer, &deadTextureClip, 1, 5);
+			restart->render(mRenderer);
+			SDL_RenderPresent(mRenderer);
+			
 		}
 	}
 }
@@ -241,7 +325,7 @@ void Game::handleMenuEvent(SDL_Event e)
 			mMenu->handleEvent(e);
 			if (mMenu->enter->getPressed() == 2)
 			{
-				gameState = PLAYER_ACTION;
+				gameState = PLAYING;
 			}
 			if (mMenu->quit->getPressed() == 2)
 			{

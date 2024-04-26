@@ -13,10 +13,11 @@
 #include"Astar.h"
 #include"Menu.h"
 #include"SoundEffect.h"
+#include"Hub.h"
 
 enum LevelState
 {
-	DYING, PLAYER_ACTION, MONSTER_ACTION
+	PLAYER_ACTION, MONSTER_ACTION
 };
 
 enum PlayerState
@@ -39,7 +40,7 @@ public:
 	void close();
 	Map* createMap(int lv);
 	ObjectLayer* creatObjectLayer(int lv);
-	void run(SDL_Event *e, bool &play);
+	void run(SDL_Event *e, int &play);
 	void render();
 	void handleEvent(SDL_Event e);
 	void clearSolidArr();
@@ -75,6 +76,7 @@ private:
 	EntityLayer* mEntLayer;
 	LTimer timer;
 	FogOfWar* fogOfWar;
+	/*Hub* mHub;*/
 
 	int mLevelSate;
 	int playerState;
@@ -89,6 +91,7 @@ private:
 	SoundEffect player_moving;
 
 	TTF_Font* mFont;
+	TTF_Font* hubFont;
 	int currentLv;
 
 	int LEVEL_WIDTH;

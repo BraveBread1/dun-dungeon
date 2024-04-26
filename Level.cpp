@@ -13,13 +13,14 @@ Level::Level(int LEVEL_WIDTH, int LEVEL_HEIGHT, int LEVEL_ROWS, int LEVEL_COLS)
 	mEntLayer = NULL;
 
 	fogOfWar = NULL;
+	/*mHub = NULL;*/
 
 	this->LEVEL_WIDTH = LEVEL_WIDTH;
 	this->LEVEL_HEIGHT = LEVEL_HEIGHT;
 	this->LEVEL_ROWS = LEVEL_ROWS;
 	this->LEVEL_COLS = LEVEL_COLS;
 
-	scale = 3;
+	scale = 3.5;
 	hasSolid = new bool* [LEVEL_ROWS];
 	for (int i = 0; i < LEVEL_ROWS; ++i)
 	{
@@ -40,20 +41,42 @@ Level::~Level()
 
 void Level::close()
 {
+	//if (mHub != NULL)
+	//{
+	//	delete mHub;
+	//	mHub = NULL;
+	//}
 
-	mMap->free();
-	mMap = NULL;
+	if (mMap != NULL)
+	{
+		mMap->free();
+		delete mMap;
+		mMap = NULL;
+	}
+
 
 	mPlayer = NULL;
 
-	mObjectLayer->free();
-	mObjectLayer = NULL;
+	if (mObjectLayer != NULL)
+	{
+		mObjectLayer->free();
+		delete mObjectLayer;
+		mObjectLayer = NULL;
+	}
 
-	mEntLayer->free();
-	mEntLayer = NULL;
+	if (mEntLayer != NULL)
+	{
+		mEntLayer->free();
+		delete mEntLayer;
+		mEntLayer = NULL;
+	}
 
-	fogOfWar->free();
-	fogOfWar = NULL;
+	if (fogOfWar != NULL)
+	{
+		fogOfWar->free();
+		delete fogOfWar;
+		fogOfWar = NULL;
+	}
 
 	clearSolidArr();
 
@@ -217,13 +240,14 @@ void Level::render()
 		}
 		fogOfWar->render(camera, mRenderer, scale);
 		mPlayer->renderStatus(mRenderer);
+		/*mHub->render(mRenderer);*/
 	}
 	else
 	{
 		/*winText.render((SCREEN_WIDTH - winText.getWidth()) / 2, (SCREEN_HEIGHT - winText.getHeight()) / 2, mRenderer);*/
 	}
 
-
+	
 
 	SDL_RenderPresent(mRenderer);
 }
@@ -239,7 +263,7 @@ void Level::clearSolidArr()
 	hasSolid = NULL;
 }
 
-void Level::run(SDL_Event* e, bool &play)
+void Level::run(SDL_Event* e, int &play)
 {
 	isPlaying = true;
 	while (isPlaying && win == false)
@@ -283,7 +307,7 @@ void Level::run(SDL_Event* e, bool &play)
 			}
 			fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
 			fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
-			mPlayer->update(mRenderer, mFont);
+			mPlayer->update(mRenderer, mFont, isPlaying, play);
 			render();
 		}
 		else if (mLevelSate == MONSTER_ACTION)
@@ -328,12 +352,16 @@ void Level::run(SDL_Event* e, bool &play)
 			}
 			fogOfWar->updateSolid(mMap->getTileSet(), mObjectLayer->getObjSet());
 			fogOfWar->update(mPlayer->getPosI(), mPlayer->getPosJ());
-			mPlayer->update(mRenderer, mFont);
+			mPlayer->update(mRenderer, mFont, isPlaying, play);
 			render();
 		}
 
 	}
-	play = isPlaying;
+	if (play != -1)
+	{
+		play = isPlaying;
+	}
+	
 }
 
 bool Level::levelInit(SDL_Window* window, SDL_Renderer* screen, TTF_Font* font, Player* player, int lv)
@@ -345,6 +373,10 @@ bool Level::levelInit(SDL_Window* window, SDL_Renderer* screen, TTF_Font* font, 
 	mFont = font;
 	mPlayer = player;
 	currentLv = lv;
+
+	hubFont = TTF_OpenFont("assests/font/pixel_font.ttf", 12);
+
+	/*mHub = new Hub();*/
 
 	mMap = createMap(lv);
 
@@ -385,6 +417,8 @@ bool Level::levelInit(SDL_Window* window, SDL_Renderer* screen, TTF_Font* font, 
 	std::string* entPath = new std::string[MAX_MONSTER_TYPE];
 	entPath[0] = "assests/sprite/rat.png";
 	entPath[1] = "assests/sprite/king.png";
+	entPath[2] = "assests/sprite/rat.png";
+	entPath[3] = "assests/sprite/crab.png";
 	if (mEntLayer->loadEntTextureSet(entPath, mRenderer) == false)
 	{
 		flag = false;
@@ -549,6 +583,8 @@ void Level::doPlayer(SDL_Event& e)
 		playerState = PLAYER_ATTACK;
 		playerAttackStart = SDL_GetTicks();
 		mLevelSate = PLAYER_ACTION;
+		std::string tmp = "deladf";
+		/*mHub->addText(tmp, mRenderer, hubFont);*/
 		if (target->getDead())
 		{
 			mPlayer->earnExp(target->getExp());

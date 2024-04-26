@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "boss_room.tmx",
+    "activeFile": "map2.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -33,8 +33,8 @@
             "scale": 1.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 367.99999999999994,
-                "y": 191.66666666666663
+                "x": 365.99999999999994,
+                "y": 190.99999999999997
             }
         },
         "boss_room.tmx#king": {
@@ -48,13 +48,16 @@
                 6
             ],
             "scale": 1.5,
-            "selectedLayer": 4,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 255.66666666666666,
-                "y": 367.66666666666663
+                "x": 253.33333333333337,
+                "y": 530.3333333333334
             }
         },
         "map1.tmx#rat": {
+            "scaleInDock": 1
+        },
+        "map1.tmx#snake": {
             "scaleInDock": 1
         },
         "map1.tmx#tile": {
@@ -68,13 +71,19 @@
         },
         "map2.tmx": {
             "scale": 2,
-            "selectedLayer": 0,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 237,
-                "y": 341.25
+                "x": 235.5,
+                "y": 340.25
             }
         },
+        "map2.tmx#crab": {
+            "scaleInDock": 1
+        },
         "map2.tmx#rat": {
+            "scaleInDock": 1
+        },
+        "map2.tmx#snake": {
             "scaleInDock": 1
         },
         "map2.tmx#water0": {
@@ -110,10 +119,10 @@
     ],
     "project": "untitled.tiled-project",
     "recentFiles": [
-        "map2.tmx",
-        "map1.tmx",
-        "tiles_sewers.tsx",
         "boss_room.tmx",
+        "tiles_sewers.tsx",
+        "map1.tmx",
+        "map2.tmx",
         "map_test.tmx",
         "C:/Users/admin/Downloads/platform.tmx"
     ],

@@ -68,7 +68,8 @@ public:
 	void setCrStatus(int s);
 
 	void earnExp(int e);
-	void update(SDL_Renderer* screen, TTF_Font* font);
+	void update(SDL_Renderer* screen, TTF_Font* font, bool &isPlaying, int &play);
+	void reset();
 	enum Facing
 	{
 		LEFT,

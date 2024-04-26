@@ -7,7 +7,7 @@
 
 enum GameState
 {
-	MENU, LEVEL1
+	MENU, PLAYING, WINNING, DYING
 };
 
 class Game
@@ -32,7 +32,7 @@ private:
 	SDL_Renderer* mRenderer;
 	Player* mPlayer;
 	Menu* mMenu;
-	bool isPlaying;
+	int isPlaying;
 	bool win;
 	Mix_Music* music;
 	TTF_Font* mFont;
@@ -45,6 +45,13 @@ private:
 	int LEVEL_HEIGHT;
 	int LEVEL_ROWS;
 	int LEVEL_COLS;
+
+	LTexture winTexture;
+	SDL_Rect winTextureClip;
+	LTexture deadTexture;
+	SDL_Rect deadTextureClip;
+
+	Button* restart;
 
 };
 

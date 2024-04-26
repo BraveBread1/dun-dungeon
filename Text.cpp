@@ -40,3 +40,14 @@ void Text::free()
 {
 	textTexture.free();
 }
+
+void Text::setPos(int x, int y)
+{
+	this->x = x;
+	this->y = y;
+}
+
+std::string Text::getText()
+{
+	return mText;
+}

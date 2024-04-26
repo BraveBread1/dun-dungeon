@@ -11,7 +11,7 @@ Entity::Entity(int i, int j, int type)
 		this->maxHP = 8;
 		this->currentHp = this->maxHP;
 		this->minDame = 1;
-		this->maxDame = 4;
+		this->maxDame = 2;
 		exp = 1;
 	}
 	else if (mType == 2)
@@ -21,6 +21,22 @@ Entity::Entity(int i, int j, int type)
 		this->minDame = 5;
 		this->maxDame = 30;
 		exp = 30;
+	}
+	else if(mType == 3)
+	{
+		this->maxHP = 5;
+		this->currentHp = this->maxHP;
+		this->minDame = 2;
+		this->maxDame = 10;
+		exp = 2;
+	}
+	else if (mType == 4)
+	{
+		this->maxHP = 15;
+		this->currentHp = this->maxHP;
+		this->minDame = 1;
+		this->maxDame = 5;
+		exp = 4;
 	}
 
 		this->alert = false;
@@ -69,13 +85,17 @@ void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTextur
 		
 		if (monsStatus == NONE)
 		{
-			if (mType == 1)
+			if (mType != 2 && mType != 3)
 			{
 				setEntClip((time / 120) % 5 * 16 + 6 * 16, 0);
 			}
 			else if (mType == 2)
 			{
 				setEntClip(0, 0);
+			}
+			else if (mType == 3)
+			{
+				setEntClip((time / 120) % 5 * 16 + 6 * 16, 16);
 			}
 			if (goDest == LEFT)
 			{
@@ -88,13 +108,17 @@ void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTextur
 		}
 		else
 		{
-			if (mType == 1)
+			if (mType != 2 && mType != 3)
 			{
 				setEntClip((time / 120) % 4 * 16 + 32, 0);
 			}
 			else if (mType == 2)
 			{
 				setEntClip((time / 120) % 4 * 16 + 128, 0);
+			}
+			else if (mType == 3)
+			{
+				setEntClip((time / 120) % 4 * 16 + 32, 16);
 			}
 			if (goDest == LEFT)
 			{
@@ -174,7 +198,7 @@ void Entity::setRedHpClip(int x, int y, int w, int h)
 
 void Entity::renderHp(SDL_Renderer* screen, LTexture& greenHpTexture, LTexture& redHpTexture, LTexture& boss_hp, SDL_FRect& camera, float scale)
 {
-	if (mType == 1)
+	if (mType != 2)
 	{
 		int hpPercent = (1.0 * currentHp / maxHP) * 16;
 		setGreenHpClip(0, 0, hpPercent, 2);
