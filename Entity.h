@@ -22,7 +22,7 @@ public:
 	~Entity();
 
 	void freeEntity();
-	void render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTexture, LTexture& greenHpTexture, LTexture& redHpTexture, Uint32 time, float scale);
+	void render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTexture, LTexture& greenHpTexture, LTexture& redHpTexture, LTexture& boss_hp, Uint32 time, float scale);
 	int getType();
 	SDL_FRect getBox();
 	void setEntClip(int x = 0, int y = 0);
@@ -32,7 +32,7 @@ public:
 
 	void setGreenHpClip(int x, int y, int w, int h);
 	void setRedHpClip(int x, int y, int w, int h);
-	void renderHp(SDL_Renderer* screen, LTexture& greenHpTexture, LTexture& redHpTexture, SDL_FRect& camera, float scale = 1);
+	void renderHp(SDL_Renderer* screen, LTexture& greenHpTexture, LTexture& redHpTexture, LTexture& boss_hp, SDL_FRect& camera, float scale = 1);
 	void move(int di, int dj, bool ** hasSolid);
 	bool nextToPlayer(int pi, int pj);
 

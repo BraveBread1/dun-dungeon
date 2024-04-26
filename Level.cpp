@@ -19,7 +19,7 @@ Level::Level(int LEVEL_WIDTH, int LEVEL_HEIGHT, int LEVEL_ROWS, int LEVEL_COLS)
 	this->LEVEL_ROWS = LEVEL_ROWS;
 	this->LEVEL_COLS = LEVEL_COLS;
 
-	scale = 2;
+	scale = 3;
 	hasSolid = new bool* [LEVEL_ROWS];
 	for (int i = 0; i < LEVEL_ROWS; ++i)
 	{
@@ -151,7 +151,7 @@ void Level::handleEvent(SDL_Event e)
 				scale += e.wheel.preciseY * 0.1;
 			}
 			if (scale < 1) scale = 1;
-			else if (scale >= 3.5) scale = 3.5;
+			else if (scale >= 5) scale = 5;
 		}
 
 		if (mPlayer->getTurn())

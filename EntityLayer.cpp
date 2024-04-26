@@ -106,7 +106,7 @@ void EntityLayer::render(SDL_FRect& camera, SDL_Renderer* screen, Uint32 time, f
 	{
 		if (p->getType() != 0)
 		{
-			p->render(camera, screen, entTexture[p->getType() - 1], greenHp, redHp, time, scale);
+			p->render(camera, screen, entTexture[p->getType() - 1], greenHp, redHp, boss_hp, time, scale);
 		}
 		p = p->next;
 	}
@@ -156,6 +156,7 @@ bool EntityLayer::loadHpTexture(std::string path1, std::string path2, SDL_Render
 	bool success = true;
 	if (greenHp.loadFromFile(path1, screen) == false) success = false;
 	if (redHp.loadFromFile(path2, screen) == false) success = false;
+	if (boss_hp.loadFromFile("assests/img/boss_hp.png", screen) == false) success = false;
 	return success;
 }
 

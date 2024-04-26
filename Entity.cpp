@@ -61,7 +61,7 @@ void Entity::freeEntity()
 	}
 }
 
-void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTexture, LTexture& greenHpTexture, LTexture& redHpTexture,Uint32 time , float scale)
+void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTexture, LTexture& greenHpTexture, LTexture& redHpTexture, LTexture& boss_hp,Uint32 time , float scale)
 {
 	if (checkCollision(camera, mBox))
 	{
@@ -109,7 +109,7 @@ void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTextur
 				setStatus(M_NO_ATTACK);
 			}
 		}
-		renderHp(screen, greenHpTexture, redHpTexture, camera, scale);
+		renderHp(screen, greenHpTexture, redHpTexture, boss_hp, camera, scale);
 	}
 }
 
@@ -172,13 +172,23 @@ void Entity::setRedHpClip(int x, int y, int w, int h)
 	redHpClip.h = h;
 }
 
-void Entity::renderHp(SDL_Renderer* screen, LTexture& greenHpTexture, LTexture& redHpTexture, SDL_FRect& camera, float scale)
+void Entity::renderHp(SDL_Renderer* screen, LTexture& greenHpTexture, LTexture& redHpTexture, LTexture& boss_hp, SDL_FRect& camera, float scale)
 {
-	int hpPercent = (1.0 * currentHp / maxHP) * 16;
-
-	setGreenHpClip(0, 0, hpPercent, 2);
-	redHpTexture.render(j * TILE_SIZE - camera.x, i * TILE_SIZE - camera.y - 8, screen, &redHpClip, scale);
-	greenHpTexture.render(j * TILE_SIZE - camera.x, i * TILE_SIZE - camera.y - 8, screen, &greenHpClip, scale);
+	if (mType == 1)
+	{
+		int hpPercent = (1.0 * currentHp / maxHP) * 16;
+		setGreenHpClip(0, 0, hpPercent, 2);
+		redHpTexture.render(j * TILE_SIZE - camera.x, i * TILE_SIZE - camera.y - 8, screen, &redHpClip, scale);
+		greenHpTexture.render(j * TILE_SIZE - camera.x, i * TILE_SIZE - camera.y - 8, screen, &greenHpClip, scale);
+	}
+	else if (mType == 2)
+	{
+		int hpPercent = (1.0 * currentHp / maxHP) * 47;
+		SDL_Rect hpPane = { 0, 0, 62, 15 };
+		boss_hp.render(j * TILE_SIZE - camera.x - 8, i * TILE_SIZE - camera.y - 11, screen, &hpPane, scale, 0.5);
+		SDL_Rect hpClip = { 14, 18, hpPercent, 4 };
+		boss_hp.render(j * TILE_SIZE - camera.x - 1, i * TILE_SIZE - camera.y - 10, screen, &hpClip, scale, 0.5);
+	}
 }
 
 bool Entity::nextToPlayer(int pi, int pj)

@@ -32,6 +32,10 @@ private:
 	int** entSet;
 	Entity* head;
 
+	LTexture boss_hp;
+	SDL_Rect bossHpPane;
+	SDL_Rect bossHP;
+
 };
 
 #endif
