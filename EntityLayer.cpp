@@ -1,4 +1,4 @@
-#include"EntityLayer.h"
+﻿#include"EntityLayer.h"
 
 EntityLayer::EntityLayer(int rows, int cols)
 {
@@ -166,18 +166,26 @@ Entity* EntityLayer::getHead()
 
 void EntityLayer::delEnt(Entity* deadEnt)
 {
-	Entity* currentEnt = head;
-	if (deadEnt == head)
+	if (head == nullptr)
+		return;
+
+	if (head == deadEnt)
 	{
 		head = head->next;
+		delete deadEnt; 
 		return;
 	}
-	while (currentEnt->next != NULL)
+	Entity* prevEnt = head;
+	while (prevEnt->next != nullptr && prevEnt->next != deadEnt)
 	{
-		if (currentEnt->next == deadEnt)
-		{
-			currentEnt->next = currentEnt->next->next;
-			break;
-		}
+		prevEnt = prevEnt->next;
 	}
+
+	if (prevEnt->next == nullptr)
+	{
+		return;
+	}
+	prevEnt->next = deadEnt->next;
+
+	delete deadEnt;
 }

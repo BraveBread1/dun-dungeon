@@ -16,14 +16,10 @@ Tile::Tile(int x, int y, int tileType, bool solid)
 
 void Tile::render(SDL_FRect& camera, LTexture &tileTexture, SDL_Rect clip, SDL_Renderer* screen, float scale)
 {
-    if (checkCollision(camera, mBox) /*&& revealed*/)
+    if (checkCollision(camera, mBox))
     {
         tileTexture.render(mBox.x - camera.x, mBox.y - camera.y, screen, &clip, scale);
     }
-    //else if (checkCollision(camera, mBox) && revealed && visible == false)
-    //{
-
-    //}
 }
 
 

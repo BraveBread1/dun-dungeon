@@ -13,8 +13,11 @@
 #include<cmath>
 #include<cstdlib>
 
-const int LEVEL_WIDTH = 512;
-const int LEVEL_HEIGHT = 736;
+//const int LEVEL_WIDTH = 512;
+//const int LEVEL_HEIGHT = 736;
+
+//const int LEVEL_WIDTH = 480;
+//const int LEVEL_HEIGHT = 496;
 
 const int SCREEN_WIDTH = 1500;
 const int SCREEN_HEIGHT = 750;
@@ -32,14 +35,16 @@ const int PLAYER_HEIGHT = 15;
 const int PLAYER_WIDTH = 12;
 
 const int TILE_SIZE = 16;
-const int TOTAL_TILES = 1050;
 const int TOTAL_TILE_SPRITES = 273;
 
-const int LEVEL1_ROWS = 46;
-const int LEVEL1_COLS = 32;
-const int LEVEL1_LAYERS = 5;
+//const int LEVEL_ROWS = 46;
+//const int LEVEL_COLS = 32;
 
-const int MAX_MONSTER_TYPE = 1;
+//const int LEVEL1_ROWS = 31;
+//const int LEVEL1_COLS = 30;
+const int LEVEL_LAYERS = 5;
+
+const int MAX_MONSTER_TYPE = 2;
 
 const int VIS_DISTANCE = 10;
 

@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map1.tmx",
+    "activeFile": "boss_room.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -31,11 +31,17 @@
         },
         "boss_room.tmx": {
             "scale": 1.5,
-            "selectedLayer": 0,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 329.33333333333337,
-                "y": 204.99999999999997
+                "x": 367.99999999999994,
+                "y": 191.66666666666663
             }
+        },
+        "boss_room.tmx#king": {
+            "scaleInDock": 1
+        },
+        "boss_room.tmx#water0": {
+            "scaleInDock": 1
         },
         "map1.tmx": {
             "expandedGroupLayers": [
@@ -44,8 +50,8 @@
             "scale": 1.5,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 207.33333333333337,
-                "y": 420.99999999999994
+                "x": 255.66666666666666,
+                "y": 367.66666666666663
             }
         },
         "map1.tmx#rat": {
@@ -64,9 +70,12 @@
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 239,
-                "y": 158.25
+                "x": 237,
+                "y": 341.25
             }
+        },
+        "map2.tmx#rat": {
+            "scaleInDock": 1
         },
         "map2.tmx#water0": {
             "scaleInDock": 1
@@ -86,7 +95,7 @@
         }
     },
     "last.externalTilesetPath": "C:/Users/admin/projects/Dun dungeon game vs/Dun dungeon game/assests/map/tileMap",
-    "last.imagePath": "C:/Users/admin/projects/Dun dungeon game vs/Dun dungeon game/assests/map",
+    "last.imagePath": "C:/Users/admin/projects/Dun dungeon game vs/Dun dungeon game/assests/sprite",
     "map.fixedSize": true,
     "map.height": 24,
     "map.lastUsedFormat": "tmx",
@@ -94,13 +103,17 @@
     "map.tileWidth": 16,
     "map.width": 41,
     "openFiles": [
+        "map2.tmx",
         "map1.tmx",
-        "tiles_sewers.tsx"
+        "tiles_sewers.tsx",
+        "boss_room.tmx"
     ],
     "project": "untitled.tiled-project",
     "recentFiles": [
-        "tiles_sewers.tsx",
+        "map2.tmx",
         "map1.tmx",
+        "tiles_sewers.tsx",
+        "boss_room.tmx",
         "map_test.tmx",
         "C:/Users/admin/Downloads/platform.tmx"
     ],

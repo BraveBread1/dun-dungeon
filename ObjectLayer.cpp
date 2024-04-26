@@ -98,9 +98,9 @@ bool ObjectLayer::setObjClips(std::string path, SDL_Renderer* screen)
 
 void ObjectLayer::render(SDL_FRect& camera, SDL_Renderer* screen, float scale)
 {
-	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	for (int i = 0; i < this->rows; ++i)
 	{
-		for (int j = 0; j < LEVEL1_COLS; ++j)
+		for (int j = 0; j < this->cols; ++j)
 		{
 			if (objSet[i][j]->getType() != 0)
 			{

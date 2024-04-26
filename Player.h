@@ -36,7 +36,7 @@ struct hero_status
 class Player
 {
 public:
-	Player(int i, int j);
+	Player(int i, int j, int LEVEL_WIDTH, int LEVEL_HEIGHT, int LEVEL_ROWS, int LEVEL_COLS);
 	~Player();
 
 	void FreePlayer();
@@ -108,6 +108,10 @@ private:
 
 	Facing facing;
 	int crStatus;
+	int LEVEL_WIDTH;
+	int LEVEL_HEIGHT;
+	int LEVEL_ROWS;
+	int LEVEL_COLS;
 	
 };
 

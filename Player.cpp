@@ -1,9 +1,13 @@
 ﻿#include"Player.h"
 
-Player::Player(int i, int j)
+Player::Player(int i, int j, int LEVEL_WIDTH, int LEVEL_HEIGHT, int LEVEL_ROWS, int LEVEL_COLS)
 {
 	mPosI = i;
 	mPosJ = j;
+	this->LEVEL_WIDTH = LEVEL_WIDTH;
+	this->LEVEL_HEIGHT = LEVEL_HEIGHT;
+	this->LEVEL_ROWS = LEVEL_ROWS;
+	this->LEVEL_COLS = LEVEL_COLS;
 
 	this->maxHP = 20;
 	this->currentHp = 20;
@@ -107,15 +111,6 @@ void Player::render(SDL_Renderer* screen, SDL_FRect& camera, Uint32 time, float 
 	}
 }
 
-//void Player::renderHp(SDL_Renderer* screen, SDL_FRect& camera, float scale)
-//{
-//	int hpPercent = (1.0 * currentHp / maxHP) * 16;
-//
-//	setGreenHpClip(0, 0, hpPercent, 2);
-//	redHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &redHpClip, scale);
-//	greenHp.render(mPosJ * TILE_SIZE - camera.x, mPosI * TILE_SIZE - camera.y - 8, screen, &greenHpClip, scale);
-//}
-
 void Player::setClip(int x, int y, int w, int h)
 {
 	clip.x = x;
@@ -188,32 +183,6 @@ void Player::attack(Entity* target)
 	int dame = rand() % maxDame + minDame;
 	target->attacked(dame);
 }
-
-//void Player::setGreenHpClip(int x, int y, int w, int h)
-//{
-//	greenHpClip.x = x;
-//	greenHpClip.y = y;
-//	greenHpClip.w = w;
-//	greenHpClip.h = h;
-//}
-//
-//void Player::setRedHpClip(int x, int y, int w, int h)
-//{
-//	redHpClip.x = x;
-//	redHpClip.y = y;
-//	redHpClip.w = w;
-//	redHpClip.h = h;
-//}
-//
-//bool Player::loadHpTexture(std::string path1, std::string path2, SDL_Renderer* screen)
-//{
-//	bool success = true;
-//	if (greenHp.loadFromFile(path1, screen) == false) success = false;
-//	setGreenHpClip(0, 0, 16, 2);
-//	if (redHp.loadFromFile(path2, screen) == false) success = false;
-//	setRedHpClip(0, 0, 16, 2);
-//	return success;
-//}
 
 void Player::attacked(int dame)
 {

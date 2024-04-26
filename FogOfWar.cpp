@@ -1,22 +1,27 @@
 ﻿#include"FogOfWar.h"
 
-FogOfWar::FogOfWar()
+FogOfWar::FogOfWar(int LEVEL_WIDTH, int LEVEL_HEIGHT, int LEVEL_ROWS, int LEVEL_COLS)
 {
-	fogMap = new int* [LEVEL1_ROWS];
-	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	this->LEVEL_WIDTH = LEVEL_WIDTH;
+	this->LEVEL_HEIGHT = LEVEL_HEIGHT;
+	this->LEVEL_ROWS = LEVEL_ROWS;
+	this->LEVEL_COLS = LEVEL_COLS;
+
+	fogMap = new int* [LEVEL_ROWS];
+	for (int i = 0; i < LEVEL_ROWS; ++i)
 	{
-		fogMap[i] = new int[LEVEL1_COLS];
-		for (int j = 0; j < LEVEL1_COLS; ++j)
+		fogMap[i] = new int[LEVEL_COLS];
+		for (int j = 0; j < LEVEL_COLS; ++j)
 		{
 			fogMap[i][j] = 0;
 		}
 	}
 
-	hasSolid = new bool* [LEVEL1_ROWS];
-	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	hasSolid = new bool* [LEVEL_ROWS];
+	for (int i = 0; i < LEVEL_ROWS; ++i)
 	{
-		hasSolid[i] = new bool[LEVEL1_COLS];
-		for (int j = 0; j < LEVEL1_COLS; ++j)
+		hasSolid[i] = new bool[LEVEL_COLS];
+		for (int j = 0; j < LEVEL_COLS; ++j)
 		{
 			hasSolid[i][j] = 0;
 		}
@@ -33,7 +38,7 @@ void FogOfWar::free()
 	BlackTexture.free();
 	if (hasSolid != NULL)
 	{
-		for (int i = 0; i < LEVEL1_ROWS; ++i)
+		for (int i = 0; i < LEVEL_ROWS; ++i)
 		{
 			delete[] hasSolid[i];
 			hasSolid[i] = NULL;
@@ -43,7 +48,7 @@ void FogOfWar::free()
 	}
 	if (fogMap != NULL)
 	{
-		for (int i = 0; i < LEVEL1_ROWS; ++i)
+		for (int i = 0; i < LEVEL_ROWS; ++i)
 		{
 			delete[] fogMap[i];
 			fogMap[i] = NULL;
@@ -98,9 +103,9 @@ bool FogOfWar::hasLOS(int i1, int j1, int i2, int j2)
 void FogOfWar::updateSolid(Tile**** tileSet, Object*** objSet)
 {
 	int j, i;
-	for (i = 0; i < LEVEL1_ROWS; i++)
+	for (i = 0; i < LEVEL_ROWS; i++)
 	{
-		for (j = 0; j < LEVEL1_COLS; j++)
+		for (j = 0; j < LEVEL_COLS; j++)
 		{
 			hasSolid[i][j] = 0;
 			if (fogMap[i][j] == 2)
@@ -110,11 +115,11 @@ void FogOfWar::updateSolid(Tile**** tileSet, Object*** objSet)
 		}
 	}
 
-	for (int l = 0; l < LEVEL1_LAYERS; ++l)
+	for (int l = 0; l < LEVEL_LAYERS; ++l)
 	{
-		for (i = 0; i < LEVEL1_ROWS; i++)
+		for (i = 0; i < LEVEL_ROWS; i++)
 		{
-			for (j = 0; j < LEVEL1_COLS; j++)
+			for (j = 0; j < LEVEL_COLS; j++)
 			{
 				if (tileSet[l][i][j]->getSolid())
 				{
@@ -123,11 +128,11 @@ void FogOfWar::updateSolid(Tile**** tileSet, Object*** objSet)
 			}
 		}
 	}
-	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	for (int i = 0; i < LEVEL_ROWS; ++i)
 	{
-		for (int j = 0; j < LEVEL1_COLS; ++j)
+		for (int j = 0; j < LEVEL_COLS; ++j)
 		{
-			if (objSet[i][j]->getType() == 216 || objSet[i][j]->getType() == 113)
+			if ((objSet[i][j]->getType() >= 213 && objSet[i][j]->getType() <= 224) || (objSet[i][j]->getType() >= 113 && objSet[i][j]->getType() <= 116 && objSet[i][j]->getType() != 114))
 			{
 				hasSolid[i][j] = 1;
 			}
@@ -161,7 +166,7 @@ void FogOfWar::update(int pi, int pj)
 			mj = pj + j;
 			//if (getDistance(pj, pi, mj, mi) <= VIS_DISTANCE)
 			//{
-				if (mi >= 0 && mj >= 0 && mj < LEVEL1_COLS && mi < LEVEL1_ROWS)
+				if (mi >= 0 && mj >= 0 && mj < LEVEL_COLS && mi < LEVEL_ROWS)
 				{
 					if (fogMap[mi][mj] != 2 && hasLOS(pi, pj, mi, mj))
 					{
@@ -176,9 +181,9 @@ void FogOfWar::update(int pi, int pj)
 
 void FogOfWar::render(SDL_FRect& camera, SDL_Renderer* screen, float scale)
 {
-	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	for (int i = 0; i < LEVEL_ROWS; ++i)
 	{
-		for (int j = 0; j < LEVEL1_COLS; ++j)
+		for (int j = 0; j < LEVEL_COLS; ++j)
 		{
 			SDL_FRect mBox(j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 			
@@ -187,123 +192,6 @@ void FogOfWar::render(SDL_FRect& camera, SDL_Renderer* screen, float scale)
 				Uint8 a = FULL_FOG;
 				if (fogMap[i][j] == 0)
 				{
-					//if (i != 0)//phia tren
-					//{
-					//	if (fogMap[i - 1][j] == 2)
-					//	{
-					//		a = NONE_FOG;
-					//		setPartClip(0, 0, 16, 1);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y, screen, &partClip, scale);
-					//		a = HALF_FOG;
-					//		setPartClip(0, 1, 16, 1);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y + 1, screen, &partClip, scale);
-					//	}
-					//	if (fogMap[i - 1][j] == 1)
-					//	{
-					//		a = HALF_FOG;
-					//		setPartClip(0, 0, 16, 2);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y, screen, &partClip, scale);
-					//	}
-					//	else
-					//	{
-					//		a = FULL_FOG;
-					//		setPartClip(0, 0, 16, 2);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y, screen, &partClip, scale);
-					//	}
-					//}
-					//if (i < LEVEL1_ROWS)//phia duoi
-					//{
-					//	if (fogMap[i + 1][j] == 2)
-					//	{
-					//		a = NONE_FOG;
-					//		setPartClip(0, 15, 16, 1);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y + 14, screen, &partClip, scale);
-					//		a = HALF_FOG;
-					//		setPartClip(0, 14, 16, 1);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y + 15, screen, &partClip, scale);
-					//	}
-					//	if (fogMap[i + 1][j] == 1)
-					//	{
-					//		a = HALF_FOG;
-					//		setPartClip(0, 14, 16, 2);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y + 14, screen, &partClip, scale);
-					//	}
-					//	else
-					//	{
-					//		a = FULL_FOG;
-					//		setPartClip(0, 14, 16, 2);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y + 14, screen, &partClip, scale);
-					//	}
-					//}
-					//if (j > 0)//trai
-					//{
-					//	if (fogMap[i][j - 1] == 2)
-					//	{
-					//		a = NONE_FOG;
-					//		setPartClip(0, 0, 1, 16);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y, screen, &partClip, scale);
-					//		a = HALF_FOG;
-					//		setPartClip(1, 0, 1, 16);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x + 1, mBox.y - camera.y, screen, &partClip, scale);
-					//	}
-					//	if (fogMap[i][j - 1] == 1)
-					//	{
-					//		a = HALF_FOG;
-					//		setPartClip(0, 0, 2, 16);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y, screen, &partClip, scale);
-					//	}
-					//	else
-					//	{
-					//		a = FULL_FOG;
-					//		setPartClip(0, 0, 2, 16);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x, mBox.y - camera.y, screen, &partClip, scale);
-					//	}
-					//}
-					//if (j < LEVEL1_COLS)//phai
-					//{
-					//	if (fogMap[i][j + 1] == 2)
-					//	{
-					//		a = NONE_FOG;
-					//		setPartClip(15, 0, 1, 16);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x + 15, mBox.y - camera.y, screen, &partClip, scale);
-					//		a = HALF_FOG;
-					//		setPartClip(14, 0, 1, 16);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x + 14, mBox.y - camera.y, screen, &partClip, scale);
-					//	}
-					//	if (fogMap[i][j + 1] == 1)
-					//	{
-					//		a = HALF_FOG;
-					//		setPartClip(14, 0, 2, 16);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x + 14, mBox.y - camera.y, screen, &partClip, scale);
-					//	}
-					//	else
-					//	{
-					//		a = FULL_FOG;
-					//		setPartClip(14, 0, 2, 16);
-					//		BlackTexture.setAlpha(a);
-					//		BlackTexture.render(mBox.x - camera.x + 14, mBox.y - camera.y, screen, &partClip, scale);
-					//	}
-					//}
-
-					//a = FULL_FOG;
-					//setPartClip(2, 2, 14, 14);
-					//BlackTexture.setAlpha(a);
-					//BlackTexture.render(mBox.x - camera.x + 2, mBox.y - camera.y + 2, screen, &partClip, scale);
 					a = FULL_FOG;
 					setPartClip(0, 0, 16, 16);
 					BlackTexture.setAlpha(a);

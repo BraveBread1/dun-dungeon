@@ -39,7 +39,7 @@ void Menu::free()
 	quit->free();
 }
 
-void Menu::handleEvent(SDL_Event e, int &mGameSate)
+void Menu::handleEvent(SDL_Event e)
 {
 	enter->hanldEvent(e);
 	instruction->hanldEvent(e);

@@ -26,8 +26,6 @@ public:
 	int getWidth();
 	int getHeight();
 
-	void renderText(std::string textureText, SDL_Color textColor, TTF_Font* gFont, SDL_Renderer* gRenderer, int x, int y, int size, int wrappingSize);
-
 private:
 	SDL_Texture* mTexture;
 

@@ -6,14 +6,22 @@ Entity::Entity(int i, int j, int type)
 	this->j = j;
 	mType = type;
 
-	//if (mType == 1)
-	//{
+	if (mType == 1)
+	{
 		this->maxHP = 8;
 		this->currentHp = this->maxHP;
 		this->minDame = 1;
 		this->maxDame = 4;
 		exp = 1;
-	//}
+	}
+	else if (mType == 2)
+	{
+		this->maxHP = 200;
+		this->currentHp = this->maxHP;
+		this->minDame = 5;
+		this->maxDame = 30;
+		exp = 30;
+	}
 
 		this->alert = false;
 		hunt = 0;
@@ -61,7 +69,14 @@ void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTextur
 		
 		if (monsStatus == NONE)
 		{
-			setEntClip((time / 120) % 5 * 16 + 6 * 16, 0);
+			if (mType == 1)
+			{
+				setEntClip((time / 120) % 5 * 16 + 6 * 16, 0);
+			}
+			else if (mType == 2)
+			{
+				setEntClip(0, 0);
+			}
 			if (goDest == LEFT)
 			{
 				entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale, 1, 0, NULL, SDL_FLIP_HORIZONTAL);
@@ -73,7 +88,14 @@ void Entity::render(SDL_FRect& camera, SDL_Renderer* screen, LTexture& entTextur
 		}
 		else
 		{
-			setEntClip((time / 120) % 4 * 16 + 32, 0);
+			if (mType == 1)
+			{
+				setEntClip((time / 120) % 4 * 16 + 32, 0);
+			}
+			else if (mType == 2)
+			{
+				setEntClip((time / 120) % 4 * 16 + 128, 0);
+			}
 			if (goDest == LEFT)
 			{
 				entTexture.render(mBox.x - camera.x, mBox.y - camera.y - 6, screen, &entClip, scale, 1, 0, NULL, SDL_FLIP_HORIZONTAL);

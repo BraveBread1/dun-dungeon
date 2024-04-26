@@ -3,11 +3,11 @@
 
 int main(int argc, char* argv[])
 {
-	Game* level1 = new Game;
-	level1->gameInit();
-	level1->run();
-	level1->close();
-	level1 = NULL;
+	Game* game = new Game;
+	game->gameInit();
+	game->run();
+	game->close();
+	game = NULL;
 
 	return 0;
 }

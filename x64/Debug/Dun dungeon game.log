@@ -1,4 +1,10 @@
-﻿  Menu.cpp
+﻿  Entity.cpp
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(38,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(39,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(177,16): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(244,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(245,13): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Entity.cpp(282,10): warning C4101: 'e': unreferenced local variable
   Dun dungeon game.vcxproj -> C:\Users\admin\projects\Dun dungeon game vs\x64\Debug\Dun dungeon game.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.

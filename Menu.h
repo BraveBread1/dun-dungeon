@@ -13,7 +13,7 @@ public:
 
 	bool loadMenuTexture(std::string path, SDL_Renderer* screen);
 	void render(SDL_Renderer* screen);
-	void handleEvent(SDL_Event e, int &mGameSate);
+	void handleEvent(SDL_Event e);
 
 	void free();
 	Button* enter;

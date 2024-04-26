@@ -7,6 +7,7 @@ Map::Map(int row, int col, int layer)
 	this->cols = col;
 	this->layers = layer;
 	tileSet = new Tile * **[layer];
+	std::cout << rows << cols << std::endl;
 }
 
 Map::~Map()
@@ -135,9 +136,9 @@ LTexture Map::getTileTexture()
 
 void Map::renderLayer(SDL_FRect& camera, SDL_Renderer* screen, int layer, float scale)
 {
-	for (int i = 0; i < LEVEL1_ROWS; ++i)
+	for (int i = 0; i < this->rows; ++i)
 	{
-		for (int j = 0; j < LEVEL1_COLS; ++j)
+		for (int j = 0; j < this->cols; ++j)
 		{
 			if (tileSet[layer][i][j]->getType() != 0)
 			{

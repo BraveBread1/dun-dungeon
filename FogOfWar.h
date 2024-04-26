@@ -10,7 +10,7 @@
 class FogOfWar
 {
 public:
-	FogOfWar();
+	FogOfWar(int LEVEL_WIDTH, int LEVEL_HEIGHT, int LEVEL_ROWS, int LEVEL_COLS);
 	~FogOfWar();
 
 	void free();
@@ -34,7 +34,10 @@ private:
 
 	int** fogMap;
 
-
+	int LEVEL_WIDTH;
+	int LEVEL_HEIGHT;
+	int LEVEL_ROWS;
+	int LEVEL_COLS;
 };
 
 #endif
