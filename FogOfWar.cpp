@@ -185,7 +185,11 @@ void FogOfWar::render(SDL_FRect& camera, SDL_Renderer* screen, float scale)
 	{
 		for (int j = 0; j < LEVEL_COLS; ++j)
 		{
-			SDL_FRect mBox(j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+			SDL_FRect mBox/*(1.0 * j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE)*/;
+			mBox.x = j * TILE_SIZE;
+			mBox.y = i * TILE_SIZE;
+			mBox.w = TILE_SIZE;
+			mBox.h = TILE_SIZE;
 			
 			if (checkCollision(camera, mBox))
 			{

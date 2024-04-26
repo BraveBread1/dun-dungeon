@@ -26,7 +26,7 @@ void Menu::render(SDL_Renderer* screen)
 {
 	menuTexture.render(0, 0, screen);
 	enter->render(screen);
-	instruction->render(screen);
+	/*instruction->render(screen);*/
 	quit->render(screen);
 	gameName.render(550, 150, screen, &gameNameClip, 1, 4);
 }

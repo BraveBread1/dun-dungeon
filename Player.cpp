@@ -9,8 +9,8 @@ Player::Player(int i, int j, int LEVEL_WIDTH, int LEVEL_HEIGHT, int LEVEL_ROWS, 
 	this->LEVEL_ROWS = LEVEL_ROWS;
 	this->LEVEL_COLS = LEVEL_COLS;
 
-	this->maxHP = 30;
-	this->currentHp = 30;
+	this->maxHP = 60;
+	this->currentHp = 60;
 	this->minDame = 1;
 	this->maxDame = 10;
 	turn = 1;

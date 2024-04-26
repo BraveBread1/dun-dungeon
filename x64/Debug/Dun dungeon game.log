@@ -1,5 +1,6 @@
-﻿  Game.cpp
-C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Game.cpp(103,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+﻿  Player.cpp
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Player.cpp(301,16): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\admin\projects\Dun dungeon game vs\Dun dungeon game\Player.cpp(302,17): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   Dun dungeon game.vcxproj -> C:\Users\admin\projects\Dun dungeon game vs\x64\Debug\Dun dungeon game.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.
